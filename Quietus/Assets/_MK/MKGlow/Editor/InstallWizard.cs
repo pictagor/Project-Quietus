@@ -32,6 +32,7 @@ namespace MK.Glow.Editor.InstallWizard
 
         private static InstallWizard _window;
         private static RenderPipeline _targetRenderPipeline = RenderPipeline.Built_in_PPSV2;
+        private static bool _showInstallerOnReload = true;
 
         [MenuItem("Window/MK/Glow/Install Wizard")]
         private static void ShowWindow()
@@ -103,7 +104,7 @@ namespace MK.Glow.Editor.InstallWizard
                 Divider();
                 VerticalSpace();
                 EditorGUILayout.LabelField("2. Import Package", UnityEditor.EditorStyles.boldLabel);
-                if(GUILayout.Button("Import Package"))
+                if(GUILayout.Button("Import / Update Package"))
                 {
                     EditorUtility.DisplayProgressBar("MK Toon Install Wizard", "Importing Package", 0.5f);
                     Configuration.ImportShaders(_targetRenderPipeline);
@@ -187,6 +188,17 @@ namespace MK.Glow.Editor.InstallWizard
                 {
                     Configuration.OpenReadMe();
                 }
+
+                VerticalSpace();
+                Divider();
+                VerticalSpace();
+
+                _showInstallerOnReload = Configuration.TryGetShowInstallerOnReload();
+                EditorGUI.BeginChangeCheck();
+                _showInstallerOnReload = EditorGUILayout.Toggle("Show Installer On Reload", _showInstallerOnReload);
+                if(EditorGUI.EndChangeCheck())
+                    Configuration.TrySetShowInstallerOnReload(_showInstallerOnReload);
+
                 EditorGUILayout.EndScrollView();
                 GUI.FocusControl(null);
             }
