@@ -56,5 +56,20 @@ namespace AmplifyShaderEditor
 		{
 			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "ed95fe726fd7b4644bb42f4d1ddd2bcd" );
 		}
+		[MenuItem( "Assets/Create/Amplify Shader/Particles Alpha Blended + TEXCOORD1", false, 85 )]
+		public static void ApplyTemplateParticlesAlphaBlendedTEXCOORD1()
+		{
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "39608c403216c2545817cb3fb95a1410" );
+		}
+		[MenuItem( "Assets/Create/Amplify Shader/Particles Alpha Blended Textureless", false, 85 )]
+		public static void ApplyTemplateParticlesAlphaBlendedTextureless()
+		{
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "0e84dec801abe9344801a4c455580029" );
+		}
+		[MenuItem( "Assets/Create/Amplify Shader/Particles Anim Alpha Blended + MV Tex", false, 85 )]
+		public static void ApplyTemplateParticlesAnimAlphaBlendedMVTex()
+		{
+			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "7f168dab9088a6842a89d1cb6141f4e8" );
+		}
 	}
 }
