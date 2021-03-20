@@ -12,6 +12,7 @@ public class CombatCamera : MonoBehaviour
     [SerializeField] TextMeshProUGUI actionText;
 
     [SerializeField] float waitForActionName;
+    public bool isMenu;
 
     public static CombatCamera instance;
 
@@ -25,18 +26,27 @@ public class CombatCamera : MonoBehaviour
 
     }
 
-    public void TriggerCombat(string actionName, int sequence)
+    public void TriggerCombat(string actionName, int sequence, bool playerInitiated)
     {
-        StartCoroutine(TriggerCombatCo(actionName, sequence));
+        StartCoroutine(TriggerCombatCo(actionName, sequence, playerInitiated));
     }
 
-    private IEnumerator TriggerCombatCo(string actionName, int sequence)
+    private IEnumerator TriggerCombatCo(string actionName, int sequence, bool playerInitiated)
     {
         CombatSprites.instance.animatingCombat = true;
 
         elementsGUI.SetActive(false);
         actionText.transform.parent.gameObject.SetActive(true);
         actionText.text = actionName;
+
+        if (playerInitiated)
+        {
+            PanCameraLeft();
+        }
+        else
+        {
+            PanCameraRight();
+        }
 
         yield return new WaitForSeconds(waitForActionName);
 
@@ -45,6 +55,16 @@ public class CombatCamera : MonoBehaviour
 
         cameraAnimator.SetTrigger("Zoom");
         CombatSprites.instance.StartCombatSequence(sequence);
+    }
+
+    public void PanCameraLeft()
+    {
+        cameraAnimator.SetTrigger("PanLeft");
+    }
+
+    public void PanCameraRight()
+    {
+        cameraAnimator.SetTrigger("PanRight");
     }
 
     //public void RevealGUI() // Called by Animator

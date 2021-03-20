@@ -7,7 +7,8 @@ using TMPro;
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] Slider combatSlider;
-    [SerializeField] float sliderSpeed;
+    [SerializeField] float sliderInterval;
+    [SerializeField] float speed;
     [SerializeField] TextMeshProUGUI counterText;
 
     // Start is called before the first frame update
@@ -25,25 +26,26 @@ public class EnemyController : MonoBehaviour
     private IEnumerator ActivateCombatSlider(int actionSpeed, int sequence, string actionName)
     {
         combatSlider.value = actionSpeed;
-        counterText.text = combatSlider.value.ToString();
+        counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
         while (combatSlider.value > 0)
         {
+            if (CombatCamera.instance.isMenu) { yield return 0; }
             if (CombatSprites.instance.animatingCombat)
             {
                 yield return null;
             }
             else
             {
-                combatSlider.value--;
-                counterText.text = combatSlider.value.ToString();
+                combatSlider.value -= speed;
+                counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
                 if (combatSlider.value == 0)
                 {
-                    CombatCamera.instance.TriggerCombat(actionName, sequence);
+                    CombatCamera.instance.TriggerCombat(actionName, sequence, false);
                     yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
                     ChooseCombatAction();
                     yield break;
                 }
-                yield return new WaitForSeconds(sliderSpeed);
+                yield return new WaitForSeconds(sliderInterval);
             }
         }
     }

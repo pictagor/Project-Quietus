@@ -27,9 +27,11 @@ public class ActionName : MonoBehaviour
         nameText.color = new Color(nameText.color.r, nameText.color.g, nameText.color.b, 0);
         smudgeMat.SetFloat("_FadeAmount", 0.4f);
 
-        Sequence mySequence = DOTween.Sequence();
-        mySequence.Append(smudgeMat.DOFloat(0f, "_FadeAmount", 0.25f));
-        mySequence.Append(nameText.DOFade(1f, 0.25f));
+        smudgeMat.DOFloat(0f, "_FadeAmount", 0.5f);
+        nameText.DOFade(1f, 0.5f);
+        //Sequence mySequence = DOTween.Sequence();
+        //mySequence.Append(smudgeMat.DOFloat(0f, "_FadeAmount", 0.25f));
+        //mySequence.Append(nameText.DOFade(1f, 0.25f));
     }
 
 }
