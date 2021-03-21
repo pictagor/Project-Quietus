@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f2f88ff08b8c6c41910121881b463a0, type: 3}
+  m_Name: Vicious Strike
+  m_EditorClassIdentifier: 
+  actionName: Vicious Strike
+  baseDamage: 50
+  baseSpeed: 26
+  sequenceID: 2
+  baseHitChance: 0.5

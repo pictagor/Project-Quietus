@@ -7,38 +7,42 @@ using TMPro;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] Slider combatSlider;
+    [SerializeField] Slider previewSlider;
     [SerializeField] float sliderInterval;
     [SerializeField] float speed;
     [SerializeField] TextMeshProUGUI counterText;
+    [SerializeField] GameObject sliderHandle;
 
-    // Start is called before the first frame update
+
+    public static PlayerController instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
     void Start()
     {
-
+        sliderHandle.SetActive(false);
+        CombatMenu.instance.DisplayMenu();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.X))
-        {
-            StartCoroutine(ActivateCombatSlider(40, 0, "Heavy Slash"));
-        }
-        else if (Input.GetKeyDown(KeyCode.Z))
-        {
-            StartCoroutine(ActivateCombatSlider(35, 1, "Triple Shots"));
-        }
+
     }
 
-    private IEnumerator ActivateCombatSlider(int actionSpeed, int sequence, string actionName)
+    private IEnumerator ActivateCombatSlider(PlayerAction playerAction)
     {
-
-        combatSlider.value = actionSpeed;
+        combatSlider.value = playerAction.baseSpeed;
         counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
+
+        HidePreviewSlider();
+
         while (combatSlider.value > 0)
         {
-            if (CombatCamera.instance.isMenu) { yield return 0; }
-            if (CombatSprites.instance.animatingCombat)
+            if (CombatMenu.instance.isMenuActive) { yield return null; }
+            else if (CombatSprites.instance.animatingCombat)
             {
                 yield return null;
             }
@@ -48,9 +52,15 @@ public class PlayerController : MonoBehaviour
                 counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
                 if (combatSlider.value == 0)
                 {
-                    CombatCamera.instance.TriggerCombat(actionName, sequence, true);
-                    yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
+                    sliderHandle.SetActive(false);
+
+                    CombatCamera.instance.TriggerCombat(playerAction.actionName, playerAction.sequenceID, true);
+                    DamageCalculator.instance.CalculateEnemyDamage(playerAction.baseDamage, playerAction.baseHitChance);
+                    CombatMenu.instance.actionQueued = false;
+
+                    //yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
                     //ChooseCombatAction();
+
                     yield break;
                 }
 
@@ -60,22 +70,23 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void ChooseCombatAction()
+    public void ChooseCombatAction(PlayerAction playerAction) // Called by CombatButton
     {
-        // Vicious Strike
-        StartCoroutine(ActivateCombatSlider(40, 1, "Melee Strike"));
+        StartCoroutine(ActivateCombatSlider(playerAction));
+        sliderHandle.SetActive(true);
     }
 
-    /// PLAYER MOVE /////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    
-    public void MeleeAttack_1()
+    public void ShowPreviewSlider(int actionSpeed) // Called by CombatButton
     {
-        StartCoroutine(ActivateCombatSlider(40, 0, "Heavy Slash"));
+        previewSlider.gameObject.SetActive(true);
+        previewSlider.value = actionSpeed;
+
+        counterText.text = Mathf.FloorToInt(actionSpeed).ToString();
     }
 
-    public void RangedAttack_1()
+    public void HidePreviewSlider()
     {
-        StartCoroutine(ActivateCombatSlider(35, 1, "Triple Shots"));
+        previewSlider.value = 0;
+        previewSlider.gameObject.SetActive(false);
     }
 }

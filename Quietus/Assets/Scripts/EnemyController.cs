@@ -7,13 +7,28 @@ using TMPro;
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] Slider combatSlider;
+    [SerializeField] Slider previewSlider;
     [SerializeField] float sliderInterval;
     [SerializeField] float speed;
     [SerializeField] TextMeshProUGUI counterText;
+    [SerializeField] GameObject sliderHandle;
+
+
+    public List<EnemyAction> enemyActionList;
+    
+    public static EnemyController instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     // Start is called before the first frame update
-    void Start()
+    private IEnumerator Start()
     {
+        sliderHandle.SetActive(false);
+        yield return new WaitForSeconds(1f);
+
         ChooseCombatAction();
     }
 
@@ -23,14 +38,14 @@ public class EnemyController : MonoBehaviour
         
     }
 
-    private IEnumerator ActivateCombatSlider(int actionSpeed, int sequence, string actionName)
+    private IEnumerator ActivateCombatSlider(EnemyAction enemyAction)
     {
-        combatSlider.value = actionSpeed;
+        combatSlider.value = enemyAction.baseSpeed;
         counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
         while (combatSlider.value > 0)
         {
-            if (CombatCamera.instance.isMenu) { yield return 0; }
-            if (CombatSprites.instance.animatingCombat)
+            if (CombatMenu.instance.isMenuActive) { yield return null; }
+            else if (CombatSprites.instance.animatingCombat)
             {
                 yield return null;
             }
@@ -40,7 +55,11 @@ public class EnemyController : MonoBehaviour
                 counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
                 if (combatSlider.value == 0)
                 {
-                    CombatCamera.instance.TriggerCombat(actionName, sequence, false);
+                    sliderHandle.SetActive(false);
+
+                    CombatCamera.instance.TriggerCombat(enemyAction.actionName, enemyAction.sequenceID, false);
+                    DamageCalculator.instance.CalculatePlayerDamage(enemyAction.baseDamage, enemyAction.baseHitChance);
+
                     yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
                     ChooseCombatAction();
                     yield break;
@@ -52,9 +71,19 @@ public class EnemyController : MonoBehaviour
 
     private void ChooseCombatAction()
     {
-        // Vicious Strike
-        StartCoroutine(ActivateCombatSlider(65, 2, "Vicious Strike"));
+        StartCoroutine(ActivateCombatSlider(enemyActionList[0]));
+        sliderHandle.SetActive(true);
     }
 
+    private void ShowPreviewSlider(int actionSpeed)
+    {
+        previewSlider.gameObject.SetActive(true);
+        previewSlider.value = actionSpeed;
+    }
 
+    private void HidePreviewSlider()
+    {
+        previewSlider.gameObject.SetActive(true);
+        previewSlider.value = 0;
+    }
 }

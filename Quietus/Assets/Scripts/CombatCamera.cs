@@ -12,7 +12,6 @@ public class CombatCamera : MonoBehaviour
     [SerializeField] TextMeshProUGUI actionText;
 
     [SerializeField] float waitForActionName;
-    public bool isMenu;
 
     public static CombatCamera instance;
 
@@ -26,7 +25,7 @@ public class CombatCamera : MonoBehaviour
 
     }
 
-    public void TriggerCombat(string actionName, int sequence, bool playerInitiated)
+    public void TriggerCombat(string actionName, int sequence, bool playerInitiated) // Called by PlayerController & EnemyController
     {
         StartCoroutine(TriggerCombatCo(actionName, sequence, playerInitiated));
     }

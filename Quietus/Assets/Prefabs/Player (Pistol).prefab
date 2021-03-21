@@ -4669,6 +4669,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be11755ebda2f3d498358df962a03b94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 7910206375480778527}
+  enemySprite: {fileID: 7910206375060761588}
+  bloodSprite: {fileID: 0}
 --- !u!1 &7910206374866079204
 GameObject:
   m_ObjectHideFlags: 0
