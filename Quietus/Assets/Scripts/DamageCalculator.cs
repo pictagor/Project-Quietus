@@ -33,12 +33,27 @@ public class DamageCalculator : MonoBehaviour
         currentHealth_Enemy = maxHealth_Enemy;
     }
 
-    public void CalculatePlayerDamage(int damage, float hitChance) // Called by PlayerController
+    public void CaldulateDamageToPlayer(int damage, float hitChance) // Called by PlayerController
     {
         // Determine Hit or Missed
-        float hit = Random.Range(0, 1f);
-        if (hit < hitChance) { missed = false; }
-        else { missed = true; }
+        float missRoll = Random.Range(0, 1f);
+
+        Debug.Log("HIT:" + missRoll);
+        Debug.Log("HIT CHANCE:" + hitChance);
+
+        if (PlayerController.instance.isDodging)
+        {
+            float newHitChance = Mathf.Clamp(hitChance - PlayerController.instance.dodge_HitPenalty, 0, 1);
+            missed = missRoll > newHitChance;
+
+            PlayerController.instance.isDodging = false;
+
+            Debug.Log("NEW HIT CHANCE:" + newHitChance);
+        }
+        else
+        {
+            missed = missRoll > hitChance;
+        }
 
         // Update Damage Text and Player Health
         if (missed)
@@ -54,12 +69,16 @@ public class DamageCalculator : MonoBehaviour
         }
     }
 
-    public void CalculateEnemyDamage(int damage, float hitChance) // Called by EnemyController
+    public void CalculateDamageToEnemy(int damage, float hitChance) // Called by EnemyController
     {
         // Determine Hit or Missed
-        float hit = Random.Range(0, 1f);
-        if (hit < hitChance) { missed = false; }
-        else { missed = true; }
+        float missRoll = Random.Range(0, 1f);
+        Debug.Log(missRoll);
+
+        Debug.Log("HIT:" + missRoll);
+        Debug.Log("HIT CHANCE:" + hitChance);
+
+        missed = missRoll > hitChance;
 
         // Update Damage Text and Enemy Health
         if (missed)

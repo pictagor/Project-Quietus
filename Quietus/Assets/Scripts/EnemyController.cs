@@ -58,7 +58,7 @@ public class EnemyController : MonoBehaviour
                     sliderHandle.SetActive(false);
 
                     CombatCamera.instance.TriggerCombat(enemyAction.actionName, enemyAction.sequenceID, false);
-                    DamageCalculator.instance.CalculatePlayerDamage(enemyAction.baseDamage, enemyAction.baseHitChance);
+                    DamageCalculator.instance.CaldulateDamageToPlayer(enemyAction.baseDamage, enemyAction.baseHitChance);
 
                     yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
                     ChooseCombatAction();

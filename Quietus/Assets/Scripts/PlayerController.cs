@@ -10,9 +10,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Slider previewSlider;
     [SerializeField] float sliderInterval;
     [SerializeField] float speed;
+
     [SerializeField] TextMeshProUGUI counterText;
+    [SerializeField] TextMeshProUGUI queueText;
+
     [SerializeField] GameObject sliderHandle;
 
+    public bool isDodging;
+    public float dodge_HitPenalty = 50;
 
     public static PlayerController instance;
 
@@ -24,7 +29,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         sliderHandle.SetActive(false);
-        CombatMenu.instance.DisplayMenu();
+        CombatMenu.instance.DisplayRootActions();
     }
 
     void Update()
@@ -36,6 +41,7 @@ public class PlayerController : MonoBehaviour
     {
         combatSlider.value = playerAction.baseSpeed;
         counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
+        queueText.text = playerAction.actionName;
 
         HidePreviewSlider();
 
@@ -53,11 +59,19 @@ public class PlayerController : MonoBehaviour
                 if (combatSlider.value == 0)
                 {
                     sliderHandle.SetActive(false);
+                    queueText.text = null;
 
-                    CombatCamera.instance.TriggerCombat(playerAction.actionName, playerAction.sequenceID, true);
-                    DamageCalculator.instance.CalculateEnemyDamage(playerAction.baseDamage, playerAction.baseHitChance);
-                    CombatMenu.instance.actionQueued = false;
-
+                    if (playerAction.actionName == "Dodge")
+                    {
+                        isDodging = true;
+                        CombatMenu.instance.actionQueued = false;
+                    }
+                    else
+                    {
+                        CombatCamera.instance.TriggerCombat(playerAction.actionName, playerAction.sequenceID, true);
+                        DamageCalculator.instance.CalculateDamageToEnemy(playerAction.baseDamage, playerAction.baseHitChance);
+                        CombatMenu.instance.actionQueued = false;
+                    }
                     //yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
                     //ChooseCombatAction();
 
@@ -69,6 +83,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
 
     public void ChooseCombatAction(PlayerAction playerAction) // Called by CombatButton
     {
@@ -87,6 +102,7 @@ public class PlayerController : MonoBehaviour
     public void HidePreviewSlider()
     {
         previewSlider.value = 0;
+        counterText.text = null;
         previewSlider.gameObject.SetActive(false);
     }
 }

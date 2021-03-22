@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Vicious Strike
   baseDamage: 50
-  baseSpeed: 26
+  baseSpeed: 35
   sequenceID: 2
-  baseHitChance: 0.5
+  baseHitChance: 0.8
