@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Pistol Assault
   m_EditorClassIdentifier: 
   actionName: Pistol Assault
-  baseDamage: 12
   baseSpeed: 16
   sequenceID: 1
-  baseHitChance: 0.5
+  baseDamage: 12
+  baseHitChance: 1
+  enemyHitPenalty: 0

@@ -6,18 +6,32 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] Slider combatSlider;
+    public Slider combatSlider;
     [SerializeField] Slider previewSlider;
-    [SerializeField] float sliderInterval;
+    public float sliderInterval;
     [SerializeField] float speed;
 
     [SerializeField] TextMeshProUGUI counterText;
     [SerializeField] TextMeshProUGUI queueText;
-
     [SerializeField] GameObject sliderHandle;
 
-    public bool isDodging;
-    public float dodge_HitPenalty = 50;
+    public enum DefendState
+    {
+        None,
+        Dodging,
+        Blocking,
+        Quickstep_LEFT,
+        Quickstep_RIGHT,
+        Quickstep_BACK
+    }
+
+    public DefendState defendState;
+
+    public float baseHitPenalty_Dodge;
+    public float hitPenalty_Dodge;
+    public int baseBlockDamage;
+
+    [SerializeField] TextMeshProUGUI dodgePenaltyText;
 
     public static PlayerController instance;
 
@@ -29,13 +43,10 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         sliderHandle.SetActive(false);
-        CombatMenu.instance.DisplayRootActions();
+
+        CombatSprites.instance.onCombatFinished.AddListener(ResetDefendState);
     }
 
-    void Update()
-    {
-
-    }
 
     private IEnumerator ActivateCombatSlider(PlayerAction playerAction)
     {
@@ -44,41 +55,47 @@ public class PlayerController : MonoBehaviour
         queueText.text = playerAction.actionName;
 
         HidePreviewSlider();
+        RallyRing.instance.ChanceForRallyRing();
 
-        while (combatSlider.value > 0)
+        while (combatSlider.value >= 0)
         {
             if (CombatMenu.instance.isMenuActive) { yield return null; }
-            else if (CombatSprites.instance.animatingCombat)
+            else if (CombatSprites.instance.animatingCombat || RallyRing.instance.isRallyActive)
             {
                 yield return null;
             }
             else
             {
-                combatSlider.value -= speed;
+                combatSlider.value = Mathf.Clamp(combatSlider.value - speed, 0, 100);
                 counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
                 if (combatSlider.value == 0)
                 {
                     sliderHandle.SetActive(false);
                     queueText.text = null;
 
-                    if (playerAction.actionName == "Dodge")
+                    switch (playerAction.actionName)
                     {
-                        isDodging = true;
-                        CombatMenu.instance.actionQueued = false;
+                        case "Dodge":
+                            defendState = DefendState.Dodging;
+                            CalculateDodgeChance();
+
+                            break;
+
+                        case "Block":                  
+                            defendState = DefendState.Blocking;
+                            break;
+
+                        default:
+                            CombatCamera.instance.TriggerCombat(playerAction.actionName, playerAction.sequenceID, true);
+                            DamageCalculator.instance.DetermineEnemyFate(playerAction.baseDamage, playerAction.baseHitChance);
+                            break;
                     }
-                    else
-                    {
-                        CombatCamera.instance.TriggerCombat(playerAction.actionName, playerAction.sequenceID, true);
-                        DamageCalculator.instance.CalculateDamageToEnemy(playerAction.baseDamage, playerAction.baseHitChance);
-                        CombatMenu.instance.actionQueued = false;
-                    }
-                    //yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
-                    //ChooseCombatAction();
+
+                    CombatMenu.instance.actionQueued = false;
 
                     yield break;
                 }
 
-                //yield return 0;
                 yield return new WaitForSeconds(sliderInterval);
             }
         }
@@ -97,6 +114,11 @@ public class PlayerController : MonoBehaviour
         previewSlider.value = actionSpeed;
 
         counterText.text = Mathf.FloorToInt(actionSpeed).ToString();
+
+        // TESTING DODGE CALCULATION
+        float previewPenalty = baseHitPenalty_Dodge + (EnemyController.instance.combatSlider.value - actionSpeed) / 100;
+        dodgePenaltyText.text = previewPenalty.ToString();
+
     }
 
     public void HidePreviewSlider()
@@ -104,5 +126,15 @@ public class PlayerController : MonoBehaviour
         previewSlider.value = 0;
         counterText.text = null;
         previewSlider.gameObject.SetActive(false);
+    }
+
+    public void ResetDefendState()
+    {
+        defendState = DefendState.None;
+    }
+
+    private void CalculateDodgeChance()
+    {
+        hitPenalty_Dodge = baseHitPenalty_Dodge + EnemyController.instance.combatSlider.value / 100;
     }
 }

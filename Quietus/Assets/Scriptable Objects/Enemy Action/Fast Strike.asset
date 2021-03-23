@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f27d558288164dd48a29e125bc5dc7c1, type: 3}
-  m_Name: Quickstep
+  m_Script: {fileID: 11500000, guid: 9f2f88ff08b8c6c41910121881b463a0, type: 3}
+  m_Name: Fast Strike
   m_EditorClassIdentifier: 
-  actionName: Quickstep
-  baseSpeed: 10
-  sequenceID: 0
-  baseDamage: 0
-  baseHitChance: 0
+  actionName: Fast Strike
+  baseDamage: 20
+  minSpeed: 28
+  maxSpeed: 35
+  sequenceID: 2
+  baseHitChance: 1

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.Events;
 
 public class CombatSprites : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class CombatSprites : MonoBehaviour
     private float enemy_originY;
     private float player_originY;
     public bool animatingCombat;
+
+    public UnityEvent onCombatFinished;
 
     public static CombatSprites instance;
 
@@ -36,7 +39,7 @@ public class CombatSprites : MonoBehaviour
         combatCanvas.SetActive(true);
     }
 
-    public void EndCombatSequence()
+    public void EndCombatSequence() // Called by Individual CombatSequence
     {
         animatingCombat = false;
         combatCanvas.SetActive(false);
@@ -44,6 +47,8 @@ public class CombatSprites : MonoBehaviour
         {
             sequence.SetActive(false);
         }
+
+        onCombatFinished.Invoke();
     }
 
     public void DamageToPlayer(int dmg)
@@ -59,19 +64,28 @@ public class CombatSprites : MonoBehaviour
 
     public void DisplayEnemyDamage()
     {
-        if (DamageCalculator.instance.missed)
-        {
-            enemyDamage.color = Color.white;
-            enemyDamage.fontSize = 50;
-        }
-        else
+        switch(DamageCalculator.instance.combatOutcome)
         {
 
-            enemyDamage.color = Color.red;
-            enemyDamage.fontSize = 100;
+            case DamageCalculator.CombatOutcome.Missed:
+                enemyDamage.text = "MISSED";
+                enemyDamage.color = Color.white;
+                enemyDamage.fontSize = 50;
+                break;
+
+            case DamageCalculator.CombatOutcome.Grazed:
+                enemyDamage.text = "GRAZED\n" + DamageCalculator.instance.damageDealt.ToString();
+                enemyDamage.color = Color.red;
+                enemyDamage.fontSize = 50;
+                break;
+
+            default:
+                enemyDamage.text = DamageCalculator.instance.damageDealt.ToString();
+                enemyDamage.color = Color.red;
+                enemyDamage.fontSize = 100;
+                break;
         }
 
-        //enemyDamage.color = new Color(enemyDamage.color.r, enemyDamage.color.g, enemyDamage.color.b, 255);
         enemyDamage.rectTransform.anchoredPosition = new Vector3(enemyDamage.rectTransform.anchoredPosition.x, enemy_originY);
         enemyDamage.rectTransform.DOAnchorPosY(enemy_originY + 150f, 1.2f);
         enemyDamage.DOFade(0f, 1.2f);
@@ -79,16 +93,26 @@ public class CombatSprites : MonoBehaviour
 
     public void DisplayPlayerDamage()
     {
-        if (DamageCalculator.instance.missed)
-        {
-            playerDamage.color = Color.white;
-            playerDamage.fontSize = 50;
-        }
-        else
+        switch (DamageCalculator.instance.combatOutcome)
         {
 
-            playerDamage.color = Color.red;
-            playerDamage.fontSize = 100;
+            case DamageCalculator.CombatOutcome.Missed:
+                playerDamage.text = "MISSED";
+                playerDamage.color = Color.white;
+                playerDamage.fontSize = 50;
+                break;
+
+            case DamageCalculator.CombatOutcome.Grazed:
+                playerDamage.text = "GRAZED\n" + DamageCalculator.instance.damageDealt.ToString();
+                playerDamage.color = Color.red;
+                playerDamage.fontSize = 50;
+                break;
+
+            default:
+                playerDamage.text = DamageCalculator.instance.damageDealt.ToString();
+                playerDamage.color = Color.red;
+                playerDamage.fontSize = 100;
+                break;
         }
 
         //playerDamage.color = new Color(playerDamage.color.r, playerDamage.color.g, playerDamage.color.b, 255);

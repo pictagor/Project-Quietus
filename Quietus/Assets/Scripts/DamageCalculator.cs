@@ -7,18 +7,30 @@ using DG.Tweening;
 
 public class DamageCalculator : MonoBehaviour
 {
+    public enum CombatOutcome
+    {
+        Hit,
+        Missed, 
+        Grazed,
+        Critical,
+        Blocked
+    }
+    public CombatOutcome combatOutcome;
 
     [SerializeField] TextMeshProUGUI enemyDamage;
     [SerializeField] TextMeshProUGUI playerDamage;
     [SerializeField] Image playerHealthBar;
     [SerializeField] Image enemyHealthBar;
 
+    private float missRoll;
+    public int damageDealt;
+    private float finalHitChance;
+
     public int maxHealth_Player;
     public int currentHealth_Player;
     public int maxHealth_Enemy;
     public int currentHealth_Enemy;
 
-    public bool missed;
 
     public static DamageCalculator instance;
 
@@ -33,74 +45,146 @@ public class DamageCalculator : MonoBehaviour
         currentHealth_Enemy = maxHealth_Enemy;
     }
 
-    public void CaldulateDamageToPlayer(int damage, float hitChance) // Called by PlayerController
+    //////////////////////////////////////////////////////////////
+    ///  ENEMY ATTACKING PLAYER //////////////////////////////////
+    //////////////////////////////////////////////////////////////
+
+    public void DeterminePlayerFate(int damage, float hitChance) // Called by PlayerController
     {
-        // Determine Hit or Missed
-        float missRoll = Random.Range(0, 1f);
+        // Determine Combat Outcome
+        CheckPlayerFate(hitChance);
 
-        Debug.Log("HIT:" + missRoll);
-        Debug.Log("HIT CHANCE:" + hitChance);
+        // Calculate Damage
+        CalculateDamageToPlayer(damage);
+    }
 
-        if (PlayerController.instance.isDodging)
+    private void CheckPlayerFate(float hitChance)
+    {
+        // Roll for Miss/Hit
+        missRoll = Random.Range(0, 1f);
+
+        switch (PlayerController.instance.defendState)
         {
-            float newHitChance = Mathf.Clamp(hitChance - PlayerController.instance.dodge_HitPenalty, 0, 1);
-            missed = missRoll > newHitChance;
+            case PlayerController.DefendState.Dodging:
+                finalHitChance = Mathf.Clamp(hitChance - PlayerController.instance.hitPenalty_Dodge, 0, 1);
+                if (missRoll > finalHitChance)
+                {
+                    combatOutcome = CombatOutcome.Missed;
+                }
+                else
+                {
+                    combatOutcome = CombatOutcome.Grazed;
+                }
+                break;
 
-            PlayerController.instance.isDodging = false;
+            case PlayerController.DefendState.Blocking:
+                combatOutcome = CombatOutcome.Blocked;
+                break;
 
-            Debug.Log("NEW HIT CHANCE:" + newHitChance);
+            case PlayerController.DefendState.Quickstep_BACK:
+
+                break;
+
+            case PlayerController.DefendState.None:
+                finalHitChance = hitChance;
+                if (missRoll > finalHitChance)
+                {
+                    combatOutcome = CombatOutcome.Missed;
+                }
+                else
+                {
+                    combatOutcome = CombatOutcome.Hit;
+                }              
+                break;
         }
-        else
-        {
-            missed = missRoll > hitChance;
-        }
 
-        // Update Damage Text and Player Health
-        if (missed)
-        {
-            playerDamage.text = "MISSED";
-        }
-        else
-        {
-            playerDamage.text = damage.ToString();
+        Debug.Log("ROLL:" + missRoll);
+        Debug.Log("MISS IF HIGHER THAN: " + finalHitChance + "(" + hitChance + " - " + PlayerController.instance.hitPenalty_Dodge + ")");
+    }
 
-            currentHealth_Player = Mathf.Clamp(currentHealth_Player - damage, 0, maxHealth_Player);
-            UpdatePlayerHealth();
+    private void CalculateDamageToPlayer(int damage)
+    {
+        switch (combatOutcome)
+        {
+            case CombatOutcome.Missed:
+        
+                break;
+
+            case CombatOutcome.Grazed:
+                damageDealt = Mathf.RoundToInt(damage * (finalHitChance - missRoll)/finalHitChance);
+                UpdatePlayerHealth();
+                break;
+
+            case CombatOutcome.Blocked:
+                damageDealt = Mathf.Clamp(damage - PlayerController.instance.baseBlockDamage, 1, damage);
+                UpdatePlayerHealth();
+                break;
+
+            case CombatOutcome.Hit:
+                damageDealt = damage;
+                UpdatePlayerHealth();
+                break;
         }
     }
 
-    public void CalculateDamageToEnemy(int damage, float hitChance) // Called by EnemyController
+
+    //////////////////////////////////////////////////////////////
+    ///  PLAYER ATTACKING ENEMY //////////////////////////////////
+    //////////////////////////////////////////////////////////////
+
+    public void DetermineEnemyFate(int damage, float hitChance) // Called by EnemyController
+    {
+        CheckEnemyFate(hitChance);
+
+        CalculateDamageToEnemy(damage);
+    }
+
+    private void CheckEnemyFate(float hitChance)
     {
         // Determine Hit or Missed
-        float missRoll = Random.Range(0, 1f);
-        Debug.Log(missRoll);
+        missRoll = Random.Range(0, 1f);
 
-        Debug.Log("HIT:" + missRoll);
-        Debug.Log("HIT CHANCE:" + hitChance);
-
-        missed = missRoll > hitChance;
-
-        // Update Damage Text and Enemy Health
-        if (missed)
+        if (missRoll > hitChance)
         {
-            enemyDamage.text = "MISSED";
+            combatOutcome = CombatOutcome.Missed;
         }
         else
         {
-            enemyDamage.text = damage.ToString();
+            combatOutcome = CombatOutcome.Hit;
+        }
+    }
 
-            currentHealth_Enemy = Mathf.Clamp(currentHealth_Enemy - damage, 0, maxHealth_Enemy);
-            UpdateEnemyHealth();
+    private void CalculateDamageToEnemy(int damage)
+    {
+        // Update Damage Text and Enemy Health
+        switch (combatOutcome)
+        {
+
+            case CombatOutcome.Missed:
+
+                break;
+
+            case CombatOutcome.Grazed:
+
+                break;
+
+            case CombatOutcome.Hit:
+
+                damageDealt = damage;
+                UpdateEnemyHealth();
+                break;
         }
     }
 
     public void UpdatePlayerHealth()
     {
+        currentHealth_Player = Mathf.Clamp(currentHealth_Player - damageDealt, 0, maxHealth_Player);
         playerHealthBar.fillAmount = (float) currentHealth_Player / (float) maxHealth_Player;
     }
 
     public void UpdateEnemyHealth()
     {
+        currentHealth_Enemy = Mathf.Clamp(currentHealth_Enemy - damageDealt, 0, maxHealth_Enemy);
         enemyHealthBar.fillAmount = (float) currentHealth_Enemy / (float) maxHealth_Enemy;
     }
 }

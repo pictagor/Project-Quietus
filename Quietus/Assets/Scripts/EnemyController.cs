@@ -6,7 +6,7 @@ using TMPro;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] Slider combatSlider;
+    public Slider combatSlider;
     [SerializeField] Slider previewSlider;
     [SerializeField] float sliderInterval;
     [SerializeField] float speed;
@@ -40,25 +40,28 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator ActivateCombatSlider(EnemyAction enemyAction)
     {
-        combatSlider.value = enemyAction.baseSpeed;
+        // Randomize Speed
+        int actionSpeed = Random.Range(enemyAction.minSpeed, enemyAction.maxSpeed);
+        combatSlider.value = actionSpeed;
+
         counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
-        while (combatSlider.value > 0)
+        while (combatSlider.value >= 0)
         {
             if (CombatMenu.instance.isMenuActive) { yield return null; }
-            else if (CombatSprites.instance.animatingCombat)
+            else if (CombatSprites.instance.animatingCombat || RallyRing.instance.isRallyActive)
             {
                 yield return null;
             }
             else
             {
-                combatSlider.value -= speed;
+                combatSlider.value = Mathf.Clamp(combatSlider.value - speed, 0, 100);
                 counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
                 if (combatSlider.value == 0)
                 {
                     sliderHandle.SetActive(false);
 
                     CombatCamera.instance.TriggerCombat(enemyAction.actionName, enemyAction.sequenceID, false);
-                    DamageCalculator.instance.CaldulateDamageToPlayer(enemyAction.baseDamage, enemyAction.baseHitChance);
+                    DamageCalculator.instance.DeterminePlayerFate(enemyAction.baseDamage, enemyAction.baseHitChance);
 
                     yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
                     ChooseCombatAction();
@@ -71,7 +74,21 @@ public class EnemyController : MonoBehaviour
 
     private void ChooseCombatAction()
     {
-        StartCoroutine(ActivateCombatSlider(enemyActionList[0]));
+        EnemyAction enemyAction;
+        float randomAction = Random.Range(0, 1f);
+
+        if (randomAction > 0.5)
+        {
+            // Fast Attack
+            enemyAction = enemyActionList[0];
+        }
+        else
+        {
+            // Slow Attack
+            enemyAction = enemyActionList[1];
+        }
+
+        StartCoroutine(ActivateCombatSlider(enemyAction));
         sliderHandle.SetActive(true);
     }
 

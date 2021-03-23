@@ -13,7 +13,4 @@ public class PlayerAction : ScriptableObject
     [Header("Attack")]
     public int baseDamage;
     public float baseHitChance;
-
-    [Header("Defend")]
-    public float enemyHitPenalty;
 }

@@ -34,27 +34,42 @@ public class CombatSequence : MonoBehaviour
 
     private void EnemySpriteEffect()
     {
-        if(DamageCalculator.instance.missed)
+        switch (DamageCalculator.instance.combatOutcome)
         {
-            bloodSprite.SetActive(false);
-        }
-        else
-        {
-            EnemyFlashHit();
-            bloodSprite.SetActive(true);
+
+            case DamageCalculator.CombatOutcome.Missed:
+                bloodSprite.SetActive(false);
+                break;
+
+            case DamageCalculator.CombatOutcome.Grazed:
+
+                break;
+
+            case DamageCalculator.CombatOutcome.Hit:
+                EnemyFlashHit();
+                bloodSprite.SetActive(true);
+                break;
+
         }
     }
 
     private void PlayerSpriteEffect()
     {
-        if (DamageCalculator.instance.missed)
+        switch (DamageCalculator.instance.combatOutcome)
         {
-            bloodSprite.SetActive(false);
-        }
-        else
-        {
-            PlayerFlashHit();
-            bloodSprite.SetActive(true);
+            case DamageCalculator.CombatOutcome.Missed:
+                bloodSprite.SetActive(false);
+                break;
+
+            case DamageCalculator.CombatOutcome.Grazed:
+
+                break;
+
+            case DamageCalculator.CombatOutcome.Hit:
+                PlayerFlashHit();
+                bloodSprite.SetActive(true);
+                break;
+
         }
     }
 
