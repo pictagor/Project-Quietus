@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Quickstep
   m_EditorClassIdentifier: 
   actionName: Quickstep
-  baseSpeed: 10
+  baseSpeed: 0
   sequenceID: 0
   baseDamage: 0
   baseHitChance: 0

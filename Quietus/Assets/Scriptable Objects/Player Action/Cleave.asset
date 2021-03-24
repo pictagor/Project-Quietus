@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cleave
   m_EditorClassIdentifier: 
   actionName: Cleave
-  baseSpeed: 50
+  baseSpeed: 35
   sequenceID: 0
   baseDamage: 40
   baseHitChance: 1

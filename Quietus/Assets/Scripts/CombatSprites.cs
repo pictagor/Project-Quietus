@@ -17,6 +17,7 @@ public class CombatSprites : MonoBehaviour
     private float player_originY;
     public bool animatingCombat;
 
+    public UnityEvent onCombatStarted;
     public UnityEvent onCombatFinished;
 
     public static CombatSprites instance;
@@ -37,6 +38,8 @@ public class CombatSprites : MonoBehaviour
     {
         combatSequence[index].SetActive(true);
         combatCanvas.SetActive(true);
+
+        onCombatStarted.Invoke();
     }
 
     public void EndCombatSequence() // Called by Individual CombatSequence

@@ -81,8 +81,8 @@ public class DamageCalculator : MonoBehaviour
                 combatOutcome = CombatOutcome.Blocked;
                 break;
 
-            case PlayerController.DefendState.Quickstep_BACK:
-
+            case PlayerController.DefendState.Quickstepping:
+                combatOutcome = CombatOutcome.Missed;
                 break;
 
             case PlayerController.DefendState.None:

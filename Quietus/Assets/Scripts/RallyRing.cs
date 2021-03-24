@@ -37,52 +37,66 @@ public class RallyRing : MonoBehaviour
         ring.gameObject.SetActive(false);
     }
 
+
     private void Update()
     {
         if (CombatMenu.instance.isMenuActive) { return; }
         if (!CombatMenu.instance.actionQueued) { return; }
-        if (!isRallyActive) { return; }
-        if(Input.GetKeyDown(KeyCode.Space))
+
+        if (timer > 0)
         {
-            if (ring.localScale.x <= 1f)
+            timer -= Time.deltaTime;
+            if (timer <= 0)
             {
-                BoostActionSpeed();
+                SpawnRallyRing();
             }
-            else
+        }
+
+        if (isRallyActive)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                ring.gameObject.SetActive(false);
-                Debug.Log("Mistimed!");
+                if (ring.localScale.x <= 1.2f && ring.localScale.x > 0.6f)
+                {
+                    BoostActionSpeed();
+                }
+                else
+                {
+                    ring.gameObject.SetActive(false);
+                    Debug.Log("Mistimed!");
+                }
             }
         }
     }
 
     public void ChanceForRallyRing() // Called by PlayerController
     {
-        StartCoroutine(ChanceForRallyRingCo());
+        timer = Random.Range(minTimer, maxTimer);
+        //StartCoroutine(ChanceForRallyRingCo());
     }
 
-    private IEnumerator ChanceForRallyRingCo()
-    {
-        timer = Random.Range(minTimer, maxTimer);
-        while (timer >= 0)
-        {
-            if (CombatSprites.instance.animatingCombat)
-            {
-                yield return null;
-            }
-            else
-            {
-                timer -= Time.deltaTime;
-                if (timer <= 0)
-                {
-                    SpawnRallyRing();
-                    timer = 0;
-                    yield break;
-                }
-                yield return null;
-            }
-        }
-    }
+    //private IEnumerator ChanceForRallyRingCo()
+    //{
+    //    timer = Random.Range(minTimer, maxTimer);
+    //    while (timer >= 0)
+    //    {
+    //        if (CombatSprites.instance.animatingCombat)
+    //        {
+    //            yield return null;
+    //        }
+    //        else
+    //        {
+    //            timer -= Time.deltaTime;
+    //            if (timer <= 0)
+    //            {
+    //                SpawnRallyRing();
+    //                timer = 0;
+    //                yield break;
+    //            }
+    //            yield return null;
+    //        }
+    //    }
+    //}
 
     private void SpawnRallyRing()
     {
@@ -91,6 +105,7 @@ public class RallyRing : MonoBehaviour
 
     private IEnumerator SpawnRallyRingCo()
     {
+        if (isRallyActive) { yield return null; }
         isRallyActive = true;
         ring.gameObject.SetActive(true);
         ring.localScale = new Vector2(3f, 3f);
@@ -121,9 +136,6 @@ public class RallyRing : MonoBehaviour
         DOTween.To(() => PlayerController.instance.combatSlider.value, x => PlayerController.instance.combatSlider.value = x, newValue, boostDuration);
         yield return new WaitForSeconds(boostDuration);
 
-        //PlayerController.instance.sliderInterval = newInterval;
-        //yield return new WaitForSeconds(boostDuration);
-        //PlayerController.instance.sliderInterval = baseInterval;
 
         ring.gameObject.SetActive(false);
         isBoosted = false;
@@ -131,7 +143,7 @@ public class RallyRing : MonoBehaviour
 
     private void OnDisable()
     {
-        StopAllCoroutines();
+        //StopAllCoroutines();
         isBoosted = false;
     }
 }

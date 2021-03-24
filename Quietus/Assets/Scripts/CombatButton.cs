@@ -105,7 +105,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
         CombatMenu.instance.actionIndex = CombatMenu.instance.allButtons.IndexOf(this);
         animator.SetBool("Selected", true);
 
-        if (playerAction == null)
+        if (playerAction == null || playerAction.baseSpeed == 0)
         {
             PlayerController.instance.HidePreviewSlider();
         }

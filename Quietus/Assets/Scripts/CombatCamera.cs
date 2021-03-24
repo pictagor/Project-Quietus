@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Events;
 
 public class CombatCamera : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class CombatCamera : MonoBehaviour
     [SerializeField] TextMeshProUGUI actionText;
 
     [SerializeField] float waitForActionName;
+
+    public UnityEvent onPrecombat;
 
     public static CombatCamera instance;
 
@@ -28,6 +31,7 @@ public class CombatCamera : MonoBehaviour
     public void TriggerCombat(string actionName, int sequence, bool playerInitiated) // Called by PlayerController & EnemyController
     {
         StartCoroutine(TriggerCombatCo(actionName, sequence, playerInitiated));
+        onPrecombat.Invoke();
     }
 
     private IEnumerator TriggerCombatCo(string actionName, int sequence, bool playerInitiated)

@@ -20,9 +20,7 @@ public class PlayerController : MonoBehaviour
         None,
         Dodging,
         Blocking,
-        Quickstep_LEFT,
-        Quickstep_RIGHT,
-        Quickstep_BACK
+        Quickstepping
     }
 
     public DefendState defendState;
@@ -104,8 +102,16 @@ public class PlayerController : MonoBehaviour
 
     public void ChooseCombatAction(PlayerAction playerAction) // Called by CombatButton
     {
-        StartCoroutine(ActivateCombatSlider(playerAction));
-        sliderHandle.SetActive(true);
+        if (playerAction.actionName == "Quickstep")
+        {
+            Quickstep.instance.SpawnArrows();
+            queueText.text = playerAction.actionName;
+        }
+        else
+        {
+            StartCoroutine(ActivateCombatSlider(playerAction));
+            sliderHandle.SetActive(true);
+        }
     }
 
     public void ShowPreviewSlider(int actionSpeed) // Called by CombatButton

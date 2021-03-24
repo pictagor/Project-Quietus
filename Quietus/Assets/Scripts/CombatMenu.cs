@@ -41,6 +41,7 @@ public class CombatMenu : MonoBehaviour
     private void Update()
     {
         if (actionQueued) { return; }
+        if (!isMenuActive) { return; }
         if(Input.GetKeyDown(KeyCode.Space))
         {
             ConfirmCurrentAction();
@@ -77,7 +78,7 @@ public class CombatMenu : MonoBehaviour
 
 
         rootActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
-        rootActions.DOLocalMoveX(0f, 0.3f);
+        rootActions.DOLocalMoveX(0f, 0.2f);
 
         playerMat.SetFloat("_OutlineAlpha", 1f);
     }
@@ -96,9 +97,9 @@ public class CombatMenu : MonoBehaviour
         headerText.text = null;
         headerText.transform.parent.gameObject.SetActive(false);
 
-        rootActions.DOLocalMoveX(-400f, 0.25f);
-        attackActions.DOLocalMoveX(-400f, 0.25f);
-        defendActions.DOLocalMoveX(-400f, 0.25f);
+        rootActions.DOLocalMoveX(-400f, 0.2f);
+        attackActions.DOLocalMoveX(-400f, 0.2f);
+        defendActions.DOLocalMoveX(-400f, 0.2f);
 
         playerMat.SetFloat("_OutlineAlpha", 0f);
     }
@@ -113,7 +114,7 @@ public class CombatMenu : MonoBehaviour
         headerText.text = "ATTACK";
 
         attackActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
-        attackActions.DOLocalMoveX(0f, 0.25f);
+        attackActions.DOLocalMoveX(0f, 0.2f);
     }
 
     public void DisplayDEFEND()
@@ -126,6 +127,6 @@ public class CombatMenu : MonoBehaviour
         headerText.text = "DEFEND";
 
         defendActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
-        defendActions.DOLocalMoveX(0f, 0.25f);
+        defendActions.DOLocalMoveX(0f, 0.2f);
     }
 }
