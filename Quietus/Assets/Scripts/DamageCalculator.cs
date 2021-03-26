@@ -49,7 +49,7 @@ public class DamageCalculator : MonoBehaviour
     ///  ENEMY ATTACKING PLAYER //////////////////////////////////
     //////////////////////////////////////////////////////////////
 
-    public void DeterminePlayerFate(int damage, float hitChance) // Called by PlayerController
+    public void DeterminePlayerFate(int damage, float hitChance) // Called by EnemyController
     {
         // Determine Combat Outcome
         CheckPlayerFate(hitChance);
@@ -132,7 +132,7 @@ public class DamageCalculator : MonoBehaviour
     ///  PLAYER ATTACKING ENEMY //////////////////////////////////
     //////////////////////////////////////////////////////////////
 
-    public void DetermineEnemyFate(int damage, float hitChance) // Called by EnemyController
+    public void DetermineEnemyFate(int damage, float hitChance) // Called by PlayerController
     {
         CheckEnemyFate(hitChance);
 

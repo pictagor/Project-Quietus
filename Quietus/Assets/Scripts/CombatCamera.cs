@@ -9,38 +9,44 @@ public class CombatCamera : MonoBehaviour
     [SerializeField] GameObject elementsGUI;
     [SerializeField] Animator cameraAnimator;
     [SerializeField] GameObject actorSprites;
-    [SerializeField] GameObject combatSprites;
     [SerializeField] TextMeshProUGUI actionText;
 
     [SerializeField] float waitForActionName;
 
-    public UnityEvent onPrecombat;
+    public string currentActionName;
+    public int currentSequence;
+
+    public UnityEvent onPrecombatStart;
+    public UnityEvent onPrecombatEnd;
 
     public static CombatCamera instance;
 
-    void Awake()
+    private void Awake()
     {
         instance = this;
     }
 
-    void Update()
+    private void Start()
     {
-
+        
     }
 
-    public void TriggerCombat(string actionName, int sequence, bool playerInitiated) // Called by PlayerController & EnemyController
+    // ========== Called by PlayerController & EnemyController when sliders reach zero ================================================
+
+    public void TriggerPrecombat(string actionName, int sequence, bool playerInitiated) 
     {
-        StartCoroutine(TriggerCombatCo(actionName, sequence, playerInitiated));
-        onPrecombat.Invoke();
+        currentActionName = actionName;
+        currentSequence = sequence;
+
+        StartCoroutine(PrecombatCamera(playerInitiated));
+        onPrecombatStart.Invoke();
     }
 
-    private IEnumerator TriggerCombatCo(string actionName, int sequence, bool playerInitiated)
-    {
-        CombatSprites.instance.animatingCombat = true;
+    // ========== CAMERA MOVEMENTS ================================================================================================
 
+    private IEnumerator PrecombatCamera(bool playerInitiated)
+    {
         elementsGUI.SetActive(false);
-        actionText.transform.parent.gameObject.SetActive(true);
-        actionText.text = actionName;
 
         if (playerInitiated)
         {
@@ -52,12 +58,15 @@ public class CombatCamera : MonoBehaviour
         }
 
         yield return new WaitForSeconds(waitForActionName);
+        ZoomCamera();
 
         actorSprites.SetActive(false);
-        actionText.transform.parent.gameObject.SetActive(false);
+        onPrecombatEnd.Invoke();
+    }
 
+    public void ZoomCamera()
+    {
         cameraAnimator.SetTrigger("Zoom");
-        CombatSprites.instance.StartCombatSequence(sequence);
     }
 
     public void PanCameraLeft()
@@ -70,12 +79,9 @@ public class CombatCamera : MonoBehaviour
         cameraAnimator.SetTrigger("PanRight");
     }
 
-    //public void RevealGUI() // Called by Animator
-    //{
-    //    combatSprites.SetActive(false);
-    //}
+    // ========== REVEAL - Called by Animator ================================================================================================
 
-    public void RevealActors() // Called by Animator
+    public void RevealActors() 
     {
         elementsGUI.SetActive(true);
         actorSprites.SetActive(true);

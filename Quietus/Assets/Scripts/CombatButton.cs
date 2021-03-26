@@ -21,16 +21,12 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
 
     public ActionType actionType;
 
-    public bool rootAction;
-    public bool firstSelected;
-
     [SerializeField] Animator animator;
     [SerializeField] PlayerAction playerAction;
     [SerializeField] TextMeshProUGUI buttonText;
+
     public UnityEvent OnButtonClick;
     public UnityEvent OnButtonSelect;
-    private int index;
-
 
     //[Header("SFX")]
     //[SoundGroupAttribute] [SerializeField] string hoverSound = "Click";
@@ -48,6 +44,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
         }
     }
 
+    // ======================= ADDED TO COMBAT MENU ====================================================================
     private void OnEnable()
     {
         StartCoroutine(AddToCombatMenuList());
@@ -63,10 +60,53 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
         }
     }
 
+    // ======================= ON SELECT ====================================================================
+
     public void SelectThisButton()
     {
         EventSystem.current.SetSelectedGameObject(this.gameObject);
     }
+
+    public void OnDeselect(BaseEventData data)
+    {
+        animator.SetBool("Selected", false);
+    }
+
+    public void OnSelect(BaseEventData eventData)
+    {
+        //if (CombatMenu.instance.actionQueued) { return; }
+        if (!CombatMenu.instance.isMenuActive) { return; }
+        CombatMenu.instance.actionIndex = CombatMenu.instance.allButtons.IndexOf(this);
+        animator.SetBool("Selected", true);
+
+        if (playerAction == null)
+        {
+            CombatHUD.instance.HidePreviewSlider();
+            Sanity.instance.DisplaySanityText();
+            return;
+        }
+
+        PlayerController.instance.SetCurrentAction(playerAction);
+        if (playerAction.baseSpeed == 0)
+        {
+            CombatHUD.instance.HidePreviewSlider();
+        }
+        else if (playerAction.baseSpeed > 0)
+        {
+            PlayerController.instance.CalculateEffectiveSpeed();
+            CombatHUD.instance.ShowPreviewSlider();
+        }
+
+        if (playerAction.sanityCost > 0)
+        {
+            Sanity.instance.DisplaySanityPreview(playerAction.sanityCost);
+        }
+        else if (playerAction.sanityCost == 0)
+        {
+            Sanity.instance.DisplaySanityText();
+        }
+    }
+    // ======================= ON CONFIRM ====================================================================
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -81,7 +121,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
     private IEnumerator ConfirmSelectedActionCo()
     {
         animator.SetTrigger("Pressed");
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.2f); // Wait for Button Shine
 
         switch (actionType)
         {
@@ -99,26 +139,6 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
         }
     }
 
-    public void OnSelect(BaseEventData eventData)
-    {
-        if (CombatMenu.instance.actionQueued) { return; }
-        CombatMenu.instance.actionIndex = CombatMenu.instance.allButtons.IndexOf(this);
-        animator.SetBool("Selected", true);
-
-        if (playerAction == null || playerAction.baseSpeed == 0)
-        {
-            PlayerController.instance.HidePreviewSlider();
-        }
-        else if (playerAction.baseSpeed > 0)
-        {
-            PlayerController.instance.ShowPreviewSlider(playerAction.baseSpeed);
-        }
-    }
-
-    public void OnDeselect(BaseEventData data)
-    {       
-        animator.SetBool("Selected", false);
-    }
 
     /// AUDIO //////////////////////////////////////////////////////
 

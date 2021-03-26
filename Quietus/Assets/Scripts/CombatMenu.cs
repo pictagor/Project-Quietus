@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Events;
 
 public class CombatMenu : MonoBehaviour
 {
@@ -18,7 +19,10 @@ public class CombatMenu : MonoBehaviour
     [SerializeField] RectTransform rootActions;
     [SerializeField] RectTransform attackActions;
     [SerializeField] RectTransform defendActions;
+    [SerializeField] RectTransform waitActions;
     [SerializeField] TextMeshProUGUI headerText;
+
+    public UnityEvent onMenuActive;
 
     public static CombatMenu instance;
 
@@ -33,6 +37,7 @@ public class CombatMenu : MonoBehaviour
         if (!actionQueued)
         {
             DisplayRootActions();
+            onMenuActive.Invoke();
         }
 
         //firstChild = rootActions.transform.GetChild(0).gameObject;
@@ -58,7 +63,7 @@ public class CombatMenu : MonoBehaviour
         else
         {
             allButtons[actionIndex].ConfirmSelectedAction();
-            actionQueued = true;
+            //actionQueued = true;
             HideAllMenu();
         }
     }
@@ -68,6 +73,8 @@ public class CombatMenu : MonoBehaviour
     {
         attackActions.gameObject.SetActive(false);
         defendActions.gameObject.SetActive(false);
+        waitActions.gameObject.SetActive(false);
+
         allButtons.Clear();
         rootActions.gameObject.SetActive(true);
 
@@ -100,6 +107,7 @@ public class CombatMenu : MonoBehaviour
         rootActions.DOLocalMoveX(-400f, 0.2f);
         attackActions.DOLocalMoveX(-400f, 0.2f);
         defendActions.DOLocalMoveX(-400f, 0.2f);
+        waitActions.DOLocalMoveX(-400f, 0.2f);
 
         playerMat.SetFloat("_OutlineAlpha", 0f);
     }
@@ -128,5 +136,18 @@ public class CombatMenu : MonoBehaviour
 
         defendActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
         defendActions.DOLocalMoveX(0f, 0.2f);
+    }
+
+    public void DisplayWAIT()
+    {
+        rootActions.gameObject.SetActive(false);
+        allButtons.Clear();
+        waitActions.gameObject.SetActive(true);
+
+        headerText.transform.parent.gameObject.SetActive(true);
+        headerText.text = "REGAIN";
+
+        waitActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
+        waitActions.DOLocalMoveX(0f, 0.2f);
     }
 }

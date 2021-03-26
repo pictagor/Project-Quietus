@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Quickdraw
   baseSpeed: 25
+  sanityCost: 12
   sequenceID: 1
-  baseDamage: 25
+  baseDamage: 20
   baseHitChance: 1

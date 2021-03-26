@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27d558288164dd48a29e125bc5dc7c1, type: 3}
   m_Name: Quickstep
   m_EditorClassIdentifier: 
+  actionType: 3
   actionName: Quickstep
   baseSpeed: 0
+  sanityCost: 5
   sequenceID: 0
   baseDamage: 0
   baseHitChance: 0
+  sanityGain: 0

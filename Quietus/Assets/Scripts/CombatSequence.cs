@@ -17,19 +17,14 @@ public class CombatSequence : MonoBehaviour
         enemyMat = enemySprite.material;
     }
 
-    private void FinishCombatAnimation()
-    {
-        CombatSprites.instance.EndCombatSequence();
-    }
-
     private void ShowEnemyDamage()
     {
-        CombatSprites.instance.DisplayEnemyDamage();
+        CombatHUD.instance.DisplayEnemyDamage();
     }
 
     private void ShowPlayerDamage()
     {
-        CombatSprites.instance.DisplayPlayerDamage();
+        CombatHUD.instance.DisplayPlayerDamage();
     }
 
     private void EnemySpriteEffect()
@@ -49,7 +44,6 @@ public class CombatSequence : MonoBehaviour
                 EnemyFlashHit();
                 bloodSprite.SetActive(true);
                 break;
-
         }
     }
 
@@ -69,7 +63,6 @@ public class CombatSequence : MonoBehaviour
                 PlayerFlashHit();
                 bloodSprite.SetActive(true);
                 break;
-
         }
     }
 
@@ -85,5 +78,11 @@ public class CombatSequence : MonoBehaviour
         Sequence mySequence = DOTween.Sequence();
         mySequence.Append(enemyMat.DOFloat(0.4f, "_HitEffectBlend", 0.1f));
         mySequence.Append(enemyMat.DOFloat(0f, "_HitEffectBlend", 0.7f));
+    }
+
+
+    private void FinishCombatAnimation()
+    {
+        CombatSprites.instance.EndCombatSequence();
     }
 }

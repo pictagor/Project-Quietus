@@ -12,6 +12,7 @@ public class RallyRing : MonoBehaviour
     [SerializeField] float maxRallyDuration;
     [SerializeField] float boostDuration;
     [SerializeField] float boostAmount;
+    [SerializeField] float boostPct = 0.2f;
     public bool isBoosted;
     public float timer;
     [SerializeField] float maxTimer;
@@ -35,6 +36,8 @@ public class RallyRing : MonoBehaviour
     {
         originalColor = tokenImage.color;
         ring.gameObject.SetActive(false);
+
+        CombatMenu.instance.onMenuActive.AddListener(DisableTimer);
     }
 
 
@@ -72,31 +75,7 @@ public class RallyRing : MonoBehaviour
     public void ChanceForRallyRing() // Called by PlayerController
     {
         timer = Random.Range(minTimer, maxTimer);
-        //StartCoroutine(ChanceForRallyRingCo());
     }
-
-    //private IEnumerator ChanceForRallyRingCo()
-    //{
-    //    timer = Random.Range(minTimer, maxTimer);
-    //    while (timer >= 0)
-    //    {
-    //        if (CombatSprites.instance.animatingCombat)
-    //        {
-    //            yield return null;
-    //        }
-    //        else
-    //        {
-    //            timer -= Time.deltaTime;
-    //            if (timer <= 0)
-    //            {
-    //                SpawnRallyRing();
-    //                timer = 0;
-    //                yield break;
-    //            }
-    //            yield return null;
-    //        }
-    //    }
-    //}
 
     private void SpawnRallyRing()
     {
@@ -121,7 +100,6 @@ public class RallyRing : MonoBehaviour
         if (isBoosted) { return; }
 
         StartCoroutine(BoostActionSpeedCo());
-        Debug.Log("Speed Boost!");
     }
 
     private IEnumerator BoostActionSpeedCo()
@@ -132,6 +110,7 @@ public class RallyRing : MonoBehaviour
         mySequence.Append(tokenImage.DOColor(Color.white, 0.2f));
         mySequence.Append(tokenImage.DOColor(originalColor, 0.2f));
 
+        boostAmount = PlayerController.instance.currentAction.baseSpeed * boostPct;
         float newValue = Mathf.Clamp(PlayerController.instance.combatSlider.value - boostAmount, 0, 100);
         DOTween.To(() => PlayerController.instance.combatSlider.value, x => PlayerController.instance.combatSlider.value = x, newValue, boostDuration);
         yield return new WaitForSeconds(boostDuration);
@@ -145,5 +124,10 @@ public class RallyRing : MonoBehaviour
     {
         //StopAllCoroutines();
         isBoosted = false;
+    }
+
+    private void DisableTimer()
+    {
+        timer = -1f;
     }
 }

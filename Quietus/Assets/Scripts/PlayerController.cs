@@ -3,33 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
-    public Slider combatSlider;
-    [SerializeField] Slider previewSlider;
-    public float sliderInterval;
-    [SerializeField] float speed;
-
-    [SerializeField] TextMeshProUGUI counterText;
-    [SerializeField] TextMeshProUGUI queueText;
-    [SerializeField] GameObject sliderHandle;
 
     public enum DefendState
     {
         None,
         Dodging,
         Blocking,
-        Quickstepping
+        Quickstepping,
+        Waiting
     }
-
     public DefendState defendState;
 
+    [Header("Events")]
+    public UnityEvent onActionChosen;
+    public UnityEvent onActionReady;
+    public PlayerAction currentAction;
+
+    [Header("Slider")]
+    public Slider combatSlider;
+    public float sliderInterval;
+    [SerializeField] float sliderSpeed;
+    [SerializeField] GameObject sliderHandle;
+    [SerializeField] TextMeshProUGUI counterText;
+
+    [Header("Speed")]
+    public float effectiveSpeed;
+    public float speedModifier = 1f;
+
+    [Header("Dodge")]
     public float baseHitPenalty_Dodge;
     public float hitPenalty_Dodge;
-    public int baseBlockDamage;
 
-    [SerializeField] TextMeshProUGUI dodgePenaltyText;
+    [Header("Block")]
+    public int baseBlockDamage;
 
     public static PlayerController instance;
 
@@ -40,55 +50,62 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        sliderHandle.SetActive(false);
-
         CombatSprites.instance.onCombatFinished.AddListener(ResetDefendState);
     }
 
+    // ==================== Called by CombatButton when Select ========================================================
 
-    private IEnumerator ActivateCombatSlider(PlayerAction playerAction)
+    public void SetCurrentAction(PlayerAction playerAction) 
     {
-        combatSlider.value = playerAction.baseSpeed;
-        counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
-        queueText.text = playerAction.actionName;
+        currentAction = playerAction;
+    }
 
-        HidePreviewSlider();
+    // ==================== Called by CombatButton when Confirm ========================================================
+
+    public void ChooseCombatAction(PlayerAction playerAction)
+    {
+        if (playerAction.actionType == PlayerAction.ActionType.Quickstep)
+        {
+            Quickstep.instance.SpawnArrows();
+        }
+        else
+        {
+            if (playerAction.baseSpeed > 0)
+            {
+                StartCoroutine(ActivateCombatSlider());
+                CombatHUD.instance.DisplaySliderHandle();
+                CombatMenu.instance.actionQueued = true;
+            }
+        }
+        onActionChosen.Invoke();
+    }
+
+    // ==================== Slider Behavior ========================================================
+
+    private IEnumerator ActivateCombatSlider()
+    {
+        combatSlider.value = effectiveSpeed;
+        counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
+
         RallyRing.instance.ChanceForRallyRing();
 
         while (combatSlider.value >= 0)
         {
             if (CombatMenu.instance.isMenuActive) { yield return null; }
-            else if (CombatSprites.instance.animatingCombat || RallyRing.instance.isRallyActive)
+            else if (CombatSprites.instance.pauseSlider || RallyRing.instance.isRallyActive)
             {
                 yield return null;
             }
             else
             {
-                combatSlider.value = Mathf.Clamp(combatSlider.value - speed, 0, 100);
+                combatSlider.value = Mathf.Clamp(combatSlider.value - sliderSpeed, 0, 100);
                 counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
                 if (combatSlider.value == 0)
                 {
-                    sliderHandle.SetActive(false);
-                    queueText.text = null;
+                    onActionReady.Invoke();
+                    PerformAction();
 
-                    switch (playerAction.actionName)
-                    {
-                        case "Dodge":
-                            defendState = DefendState.Dodging;
-                            CalculateDodgeChance();
-
-                            break;
-
-                        case "Block":                  
-                            defendState = DefendState.Blocking;
-                            break;
-
-                        default:
-                            CombatCamera.instance.TriggerCombat(playerAction.actionName, playerAction.sequenceID, true);
-                            DamageCalculator.instance.DetermineEnemyFate(playerAction.baseDamage, playerAction.baseHitChance);
-                            break;
-                    }
-
+                    currentAction = null;
                     CombatMenu.instance.actionQueued = false;
 
                     yield break;
@@ -99,40 +116,36 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // ==================== When slider reaches zero ========================================================
 
-    public void ChooseCombatAction(PlayerAction playerAction) // Called by CombatButton
+    private void PerformAction()
     {
-        if (playerAction.actionName == "Quickstep")
+        switch (currentAction.actionType)
         {
-            Quickstep.instance.SpawnArrows();
-            queueText.text = playerAction.actionName;
+            case PlayerAction.ActionType.Dodge:
+                defendState = DefendState.Dodging;
+                CalculateDodgeChance();
+
+                break;
+
+            case PlayerAction.ActionType.Block:
+                defendState = DefendState.Blocking;
+                break;
+
+            case PlayerAction.ActionType.Wait:
+                defendState = DefendState.Waiting;
+                Sanity.instance.RegainSanity();
+                break;
+
+            case PlayerAction.ActionType.Attack:
+                CombatCamera.instance.TriggerPrecombat(currentAction.actionName, currentAction.sequenceID, true);
+                DamageCalculator.instance.DetermineEnemyFate(currentAction.baseDamage, currentAction.baseHitChance);
+                break;
         }
-        else
-        {
-            StartCoroutine(ActivateCombatSlider(playerAction));
-            sliderHandle.SetActive(true);
-        }
     }
 
-    public void ShowPreviewSlider(int actionSpeed) // Called by CombatButton
-    {
-        previewSlider.gameObject.SetActive(true);
-        previewSlider.value = actionSpeed;
 
-        counterText.text = Mathf.FloorToInt(actionSpeed).ToString();
-
-        // TESTING DODGE CALCULATION
-        float previewPenalty = baseHitPenalty_Dodge + (EnemyController.instance.combatSlider.value - actionSpeed) / 100;
-        dodgePenaltyText.text = previewPenalty.ToString();
-
-    }
-
-    public void HidePreviewSlider()
-    {
-        previewSlider.value = 0;
-        counterText.text = null;
-        previewSlider.gameObject.SetActive(false);
-    }
+    // ==================== Other Calculations ========================================================
 
     public void ResetDefendState()
     {
@@ -143,4 +156,10 @@ public class PlayerController : MonoBehaviour
     {
         hitPenalty_Dodge = baseHitPenalty_Dodge + EnemyController.instance.combatSlider.value / 100;
     }
+
+    public void CalculateEffectiveSpeed()
+    {
+        effectiveSpeed = currentAction.baseSpeed * speedModifier;
+    }
+
 }

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f27d558288164dd48a29e125bc5dc7c1, type: 3}
-  m_Name: Block
+  m_Name: Mindcull
   m_EditorClassIdentifier: 
-  actionType: 2
-  actionName: Block
-  baseSpeed: 8
-  sanityCost: 5
+  actionType: 4
+  actionName: Mindcull
+  baseSpeed: 20
+  sanityCost: 0
   sequenceID: 0
   baseDamage: 0
   baseHitChance: 0
-  sanityGain: 0
+  sanityGain: 38

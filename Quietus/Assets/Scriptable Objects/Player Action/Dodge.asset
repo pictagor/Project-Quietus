@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27d558288164dd48a29e125bc5dc7c1, type: 3}
   m_Name: Dodge
   m_EditorClassIdentifier: 
+  actionType: 1
   actionName: Dodge
-  baseSpeed: 10
+  baseSpeed: 12
+  sanityCost: 5
   sequenceID: 0
   baseDamage: 0
   baseHitChance: 0
+  sanityGain: 0

@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f27d558288164dd48a29e125bc5dc7c1, type: 3}
-  m_Name: Pistol Assault
+  m_Name: Snap Out
   m_EditorClassIdentifier: 
-  actionName: Pistol Assault
-  baseSpeed: 16
-  sequenceID: 1
-  baseDamage: 12
-  baseHitChance: 1
-  enemyHitPenalty: 0
+  actionType: 4
+  actionName: Snap Out
+  baseSpeed: 6
+  sanityCost: 0
+  sequenceID: 0
+  baseDamage: 0
+  baseHitChance: 0
+  sanityGain: 10

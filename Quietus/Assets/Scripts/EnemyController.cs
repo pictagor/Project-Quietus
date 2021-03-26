@@ -7,14 +7,18 @@ using TMPro;
 public class EnemyController : MonoBehaviour
 {
     public Slider combatSlider;
-    [SerializeField] Slider previewSlider;
     [SerializeField] float sliderInterval;
     [SerializeField] float speed;
     [SerializeField] TextMeshProUGUI counterText;
     [SerializeField] GameObject sliderHandle;
+    [SerializeField] GameObject intent;
+    [SerializeField] TextMeshProUGUI intentText;
 
+    private float speedRoll;
+    public int effectiveDamage;
 
     public List<EnemyAction> enemyActionList;
+    public EnemyAction currentAction;
     
     public static EnemyController instance;
 
@@ -27,28 +31,21 @@ public class EnemyController : MonoBehaviour
     private IEnumerator Start()
     {
         sliderHandle.SetActive(false);
+        intent.SetActive(false);
         yield return new WaitForSeconds(1f);
 
         ChooseCombatAction();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private IEnumerator ActivateCombatSlider(EnemyAction enemyAction)
     {
-        // Randomize Speed
-        int actionSpeed = Random.Range(enemyAction.minSpeed, enemyAction.maxSpeed);
-        combatSlider.value = actionSpeed;
-
+        combatSlider.value = speedRoll;
         counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
         while (combatSlider.value >= 0)
         {
             if (CombatMenu.instance.isMenuActive) { yield return null; }
-            else if (CombatSprites.instance.animatingCombat || RallyRing.instance.isRallyActive)
+            else if (CombatSprites.instance.pauseSlider || RallyRing.instance.isRallyActive)
             {
                 yield return null;
             }
@@ -59,11 +56,12 @@ public class EnemyController : MonoBehaviour
                 if (combatSlider.value == 0)
                 {
                     sliderHandle.SetActive(false);
+                    intent.SetActive(false);
 
-                    CombatCamera.instance.TriggerCombat(enemyAction.actionName, enemyAction.sequenceID, false);
-                    DamageCalculator.instance.DeterminePlayerFate(enemyAction.baseDamage, enemyAction.baseHitChance);
+                    CombatCamera.instance.TriggerPrecombat(enemyAction.actionName, enemyAction.sequenceID, false);
+                    DamageCalculator.instance.DeterminePlayerFate(effectiveDamage, enemyAction.baseHitChance);
 
-                    yield return new WaitUntil(() => CombatSprites.instance.animatingCombat == false);
+                    yield return new WaitUntil(() => CombatSprites.instance.pauseSlider == false);
                     ChooseCombatAction();
                     yield break;
                 }
@@ -74,33 +72,24 @@ public class EnemyController : MonoBehaviour
 
     private void ChooseCombatAction()
     {
-        EnemyAction enemyAction;
         float randomAction = Random.Range(0, 1f);
 
-        if (randomAction > 0.5)
-        {
-            // Fast Attack
-            enemyAction = enemyActionList[0];
-        }
-        else
-        {
-            // Slow Attack
-            enemyAction = enemyActionList[1];
-        }
+        currentAction = enemyActionList[0];
 
-        StartCoroutine(ActivateCombatSlider(enemyAction));
+        // Speed Roll
+        speedRoll = Random.Range(currentAction.minSpeed, currentAction.maxSpeed);
+
+        // Damage Calculation
+        float factor_a = (currentAction.maxDamage - currentAction.minDamage) / (currentAction.maxSpeed - currentAction.minSpeed);
+        float factor_b = currentAction.maxDamage - factor_a * currentAction.maxSpeed;
+        effectiveDamage = Mathf.RoundToInt(factor_a * speedRoll + factor_b); 
+
+        StartCoroutine(ActivateCombatSlider(currentAction));
         sliderHandle.SetActive(true);
+
+        // Display Intent
+        intent.SetActive(true);
+        intentText.text = effectiveDamage.ToString();
     }
 
-    private void ShowPreviewSlider(int actionSpeed)
-    {
-        previewSlider.gameObject.SetActive(true);
-        previewSlider.value = actionSpeed;
-    }
-
-    private void HidePreviewSlider()
-    {
-        previewSlider.gameObject.SetActive(true);
-        previewSlider.value = 0;
-    }
 }
