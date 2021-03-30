@@ -12,7 +12,8 @@ public class PlayerAction : ScriptableObject
         Dodge,
         Block,
         Quickstep,
-        Wait
+        ShortWait,
+        LongWait,
     }
     public ActionType actionType;
 

@@ -25,7 +25,7 @@ public class Quickstep : MonoBehaviour
 
     private void Start()
     {
-        CombatCamera.instance.onPrecombatStart.AddListener(EndQuickstep);
+        CombatManager.instance.onPrecombatStart.AddListener(EndQuickstep);
     }
 
     private void Update()
@@ -168,7 +168,7 @@ public class Quickstep : MonoBehaviour
         directions.Clear();
         arrowIndex = 0;
 
-        CombatHUD.instance.HideQueueText();
+        CombatHUD.instance.HidePlayerQueueText();
     }
 
 }

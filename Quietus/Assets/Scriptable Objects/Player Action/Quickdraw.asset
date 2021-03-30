@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27d558288164dd48a29e125bc5dc7c1, type: 3}
   m_Name: Quickdraw
   m_EditorClassIdentifier: 
+  actionType: 0
   actionName: Quickdraw
   baseSpeed: 25
-  sanityCost: 12
+  sanityCost: 40
   sequenceID: 1
   baseDamage: 20
   baseHitChance: 1
+  sanityGain: 0

@@ -83,6 +83,6 @@ public class CombatSequence : MonoBehaviour
 
     private void FinishCombatAnimation()
     {
-        CombatSprites.instance.EndCombatSequence();
+        CombatManager.instance.EndCombatSequence();
     }
 }

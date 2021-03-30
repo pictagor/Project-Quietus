@@ -21,8 +21,8 @@ public class CombatHUD : MonoBehaviour
     [SerializeField] Slider previewSlider;
     [SerializeField] GameObject sliderHandle;
     [SerializeField] TextMeshProUGUI counterText;
-    public TextMeshProUGUI queueText;
-
+    public TextMeshProUGUI queueText_Player;
+    public TextMeshProUGUI queueText_Enemy;
 
     public static CombatHUD instance;
 
@@ -36,15 +36,18 @@ public class CombatHUD : MonoBehaviour
         player_originY = playerDamage.rectTransform.anchoredPosition.y;
         enemy_originY = enemyDamage.rectTransform.anchoredPosition.y;
 
-        CombatCamera.instance.onPrecombatStart.AddListener(DisplayActionName);
-        CombatCamera.instance.onPrecombatEnd.AddListener(HideActionName);
+        CombatManager.instance.onPrecombatStart.AddListener(DisplayActionName);
+        CombatManager.instance.onPrecombatEnd.AddListener(HideActionName);
 
-        CombatSprites.instance.onCombatStarted.AddListener(EnableCombatCanvas);
-        CombatSprites.instance.onCombatFinished.AddListener(DisableCombatCanvas);
+        CombatManager.instance.onCombatStarted.AddListener(EnableCombatCanvas);
+        CombatManager.instance.onCombatFinished.AddListener(DisableCombatCanvas);
 
-        PlayerController.instance.onActionChosen.AddListener(DisplayQueueText);
-        PlayerController.instance.onActionReady.AddListener(HideQueueText);
+        PlayerController.instance.onActionChosen.AddListener(DisplayPlayerQueueText);
+        PlayerController.instance.onActionReady.AddListener(HidePlayerQueueText);
         PlayerController.instance.onActionReady.AddListener(HideSliderHandle);
+
+        EnemyController.instance.onActionChosen.AddListener(DisplayEnemyQueueText);
+        EnemyController.instance.onActionReady.AddListener(HideEnemyQueueText);
 
         sliderHandle.SetActive(false);
     }
@@ -54,7 +57,7 @@ public class CombatHUD : MonoBehaviour
     public void DisplayActionName()
     {
         actionText.transform.parent.gameObject.SetActive(true);
-        actionText.text = CombatCamera.instance.currentActionName;
+        actionText.text = CombatManager.instance.currentActionName;
     }
 
     public void HideActionName()
@@ -137,15 +140,15 @@ public class CombatHUD : MonoBehaviour
 
     // ================================== QUEUE TEXT & SLIDER HANDLE ================================================================
 
-    public void DisplayQueueText()
+    public void DisplayPlayerQueueText()
     {
-        queueText.text = PlayerController.instance.currentAction.actionName;
+        queueText_Player.text = PlayerController.instance.currentAction.actionName;
         HidePreviewSlider();
     }
 
-    public void HideQueueText()
+    public void HidePlayerQueueText()
     {
-        queueText.text = null;
+        queueText_Player.text = null;
     }
 
     public void DisplaySliderHandle()
@@ -156,6 +159,16 @@ public class CombatHUD : MonoBehaviour
     public void HideSliderHandle()
     {
         sliderHandle.SetActive(false);
+    }
+
+    public void DisplayEnemyQueueText()
+    {
+        queueText_Enemy.text = EnemyController.instance.currentAction.actionName;
+    }
+
+    public void HideEnemyQueueText()
+    {
+        queueText_Player.text = null;
     }
 
     // ================================== PREVIEW SLIDER ================================================================

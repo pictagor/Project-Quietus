@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Events;
 
 public class EnemyController : MonoBehaviour
 {
@@ -17,8 +18,12 @@ public class EnemyController : MonoBehaviour
     private float speedRoll;
     public int effectiveDamage;
 
-    public List<EnemyAction> enemyActionList;
+    public List<EnemyAction> baseActionList;
+    public List<EnemyAction> availableActionList;
     public EnemyAction currentAction;
+
+    public UnityEvent onActionChosen;
+    public UnityEvent onActionReady;
     
     public static EnemyController instance;
 
@@ -32,8 +37,13 @@ public class EnemyController : MonoBehaviour
     {
         sliderHandle.SetActive(false);
         intent.SetActive(false);
-        yield return new WaitForSeconds(1f);
 
+        for (int i = 0; i < baseActionList.Count; i++)
+        {
+            availableActionList.Add(baseActionList[i]);
+        }
+
+        yield return new WaitForSeconds(1f);
         ChooseCombatAction();
     }
 
@@ -45,7 +55,7 @@ public class EnemyController : MonoBehaviour
         while (combatSlider.value >= 0)
         {
             if (CombatMenu.instance.isMenuActive) { yield return null; }
-            else if (CombatSprites.instance.pauseSlider || RallyRing.instance.isRallyActive)
+            else if (CombatManager.instance.pauseSlider || RallyRing.instance.isRallyActive)
             {
                 yield return null;
             }
@@ -55,13 +65,14 @@ public class EnemyController : MonoBehaviour
                 counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
                 if (combatSlider.value == 0)
                 {
+                    onActionReady.Invoke();
                     sliderHandle.SetActive(false);
                     intent.SetActive(false);
 
-                    CombatCamera.instance.TriggerPrecombat(enemyAction.actionName, enemyAction.sequenceID, false);
-                    DamageCalculator.instance.DeterminePlayerFate(effectiveDamage, enemyAction.baseHitChance);
+                    CombatManager.instance.EnemyTriggerPrecombat(enemyAction);
+                    DamageCalculator.instance.DeterminePlayerFate(effectiveDamage, enemyAction);
 
-                    yield return new WaitUntil(() => CombatSprites.instance.pauseSlider == false);
+                    yield return new WaitUntil(() => CombatManager.instance.pauseSlider == false);
                     ChooseCombatAction();
                     yield break;
                 }
@@ -72,9 +83,14 @@ public class EnemyController : MonoBehaviour
 
     private void ChooseCombatAction()
     {
-        float randomAction = Random.Range(0, 1f);
+        int randomAction = Random.Range(0, availableActionList.Count);
 
-        currentAction = enemyActionList[0];
+        // Start action cooldown (if applicable)
+        currentAction = availableActionList[randomAction];
+        if (currentAction.cooldown > 0)
+        {
+            StartCoroutine(TriggerActionCooldown(currentAction.cooldown));
+        }
 
         // Speed Roll
         speedRoll = Random.Range(currentAction.minSpeed, currentAction.maxSpeed);
@@ -90,6 +106,41 @@ public class EnemyController : MonoBehaviour
         // Display Intent
         intent.SetActive(true);
         intentText.text = effectiveDamage.ToString();
+
+        // Invoke Event
+        onActionChosen.Invoke();
     }
 
+
+    private IEnumerator TriggerActionCooldown(float cooldownDuration)
+    {
+        EnemyAction myAction = currentAction;
+        availableActionList.Remove(myAction);
+        yield return StartCoroutine(BattleCountdown(cooldownDuration));
+        availableActionList.Add(myAction);
+    }
+
+
+    /// =========== HELPER ======================================================================================
+
+    public static IEnumerator BattleCountdown(float duration)
+    {
+        float timer = 0;
+        while (true)
+        {
+            if (CombatMenu.instance.isMenuActive || CombatManager.instance.pauseSlider || RallyRing.instance.isRallyActive)
+            {
+                yield return null;
+            }
+            else
+            {
+                timer += Time.deltaTime;
+                if (timer >= duration)
+                {
+                    yield break;
+                }
+            }
+            yield return null;
+        }
+    }
 }

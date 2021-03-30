@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f27d558288164dd48a29e125bc5dc7c1, type: 3}
   m_Name: Cleave
   m_EditorClassIdentifier: 
+  actionType: 0
   actionName: Cleave
   baseSpeed: 40
-  sanityCost: 15
+  sanityCost: 50
   sequenceID: 0
   baseDamage: 45
   baseHitChance: 1
+  sanityGain: 0

@@ -25,8 +25,8 @@ public class CombatSprites : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CombatCamera.instance.onPrecombatStart.AddListener(PauseCombatSlider);
-        CombatCamera.instance.onPrecombatEnd.AddListener(StartCombatSequence);
+        CombatManager.instance.onPrecombatStart.AddListener(PauseCombatSlider);
+        CombatMenu.instance.onMenuActive.AddListener(PauseCombatSlider);
     }
 
     public void PauseCombatSlider()
@@ -41,7 +41,7 @@ public class CombatSprites : MonoBehaviour
 
     public void StartCombatSequence()
     {
-        combatSequence[CombatCamera.instance.currentSequence].SetActive(true);
+        combatSequence[CombatManager.instance.currentSequence].SetActive(true);
 
         onCombatStarted.Invoke();
     }

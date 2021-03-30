@@ -41,6 +41,12 @@ public class PlayerController : MonoBehaviour
     [Header("Block")]
     public int baseBlockDamage;
 
+    [Header("Wait")]
+    public float longWaitFactor = 0.002f;
+    public float longWaitConst = 0.75f;
+    public float maxLongWait = 100;
+    public float minlongWait = 25;
+
     public static PlayerController instance;
 
     private void Awake()
@@ -50,7 +56,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        CombatSprites.instance.onCombatFinished.AddListener(ResetDefendState);
+        CombatManager.instance.onCombatFinished.AddListener(ResetDefendState);
     }
 
     // ==================== Called by CombatButton when Select ========================================================
@@ -64,6 +70,7 @@ public class PlayerController : MonoBehaviour
 
     public void ChooseCombatAction(PlayerAction playerAction)
     {
+        CombatManager.instance.ResumeCombatSlider();
         if (playerAction.actionType == PlayerAction.ActionType.Quickstep)
         {
             Quickstep.instance.SpawnArrows();
@@ -92,7 +99,7 @@ public class PlayerController : MonoBehaviour
         while (combatSlider.value >= 0)
         {
             if (CombatMenu.instance.isMenuActive) { yield return null; }
-            else if (CombatSprites.instance.pauseSlider || RallyRing.instance.isRallyActive)
+            else if (CombatManager.instance.pauseSlider || RallyRing.instance.isRallyActive)
             {
                 yield return null;
             }
@@ -132,13 +139,20 @@ public class PlayerController : MonoBehaviour
                 defendState = DefendState.Blocking;
                 break;
 
-            case PlayerAction.ActionType.Wait:
+            case PlayerAction.ActionType.ShortWait:
                 defendState = DefendState.Waiting;
+                CombatManager.instance.PlayerTriggerPrecombat(currentAction);
+                Sanity.instance.RegainSanity();
+                break;
+
+            case PlayerAction.ActionType.LongWait:
+                defendState = DefendState.Waiting;
+                CombatManager.instance.PlayerTriggerPrecombat(currentAction);
                 Sanity.instance.RegainSanity();
                 break;
 
             case PlayerAction.ActionType.Attack:
-                CombatCamera.instance.TriggerPrecombat(currentAction.actionName, currentAction.sequenceID, true);
+                CombatManager.instance.PlayerTriggerPrecombat(currentAction);
                 DamageCalculator.instance.DetermineEnemyFate(currentAction.baseDamage, currentAction.baseHitChance);
                 break;
         }
@@ -159,7 +173,22 @@ public class PlayerController : MonoBehaviour
 
     public void CalculateEffectiveSpeed()
     {
-        effectiveSpeed = currentAction.baseSpeed * speedModifier;
+        if (currentAction.actionType == PlayerAction.ActionType.LongWait)
+        {
+            CalculateLongWaitSpeed();
+        }
+        else
+        {
+            effectiveSpeed = currentAction.baseSpeed * speedModifier;
+        }
+    }
+
+    public void CalculateLongWaitSpeed()
+    {
+        float waitSpeed = Mathf.Pow(Sanity.instance.sanityCounter, 2f) / Mathf.Pow(longWaitConst, 2f) * longWaitFactor ;
+        Debug.Log(Mathf.Pow(Sanity.instance.sanityCounter, 2f));
+        Debug.Log(waitSpeed);
+        effectiveSpeed = Mathf.Clamp(waitSpeed, minlongWait, maxLongWait);
     }
 
 }

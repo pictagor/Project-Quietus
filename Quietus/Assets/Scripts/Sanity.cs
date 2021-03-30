@@ -6,9 +6,10 @@ using TMPro;
 public class Sanity : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI sanityText;
-    [SerializeField] int sanityCounter;
+    public int sanityCounter;
     [SerializeField] Color color1;
     [SerializeField] Color color2;
+    [SerializeField] int doomThreshold = 100;
 
     public static Sanity instance;
 
@@ -21,11 +22,13 @@ public class Sanity : MonoBehaviour
     {
         DisplaySanityText();
         PlayerController.instance.onActionChosen.AddListener(IncreaseSanity);
+        CombatMenu.instance.onMenuActive.AddListener(CheckDOOM);
     }
 
-    public void DisplaySanityPreview(int cost) // Called by Combat Button
+    public void DisplaySanityPreview(int cost, int gain) // Called by Combat Button
     {
-        sanityText.text = (sanityCounter + cost).ToString();
+        int previewCounter = Mathf.Clamp(sanityCounter + cost - gain, 0, 999);
+        sanityText.text = previewCounter.ToString();
         sanityText.color = color2;
     }
     
@@ -33,6 +36,18 @@ public class Sanity : MonoBehaviour
     {
         sanityCounter += PlayerController.instance.currentAction.sanityCost;
         DisplaySanityText();
+    }
+
+    private void CheckDOOM()
+    {
+        if (sanityCounter >= doomThreshold)
+        {
+            StatusEffect.instance.InflictDOOM();
+        }
+        else
+        {
+            StatusEffect.instance.RemoveDOOM();
+        }
     }
 
     public void RegainSanity()

@@ -22,6 +22,10 @@ public class CombatMenu : MonoBehaviour
     [SerializeField] RectTransform waitActions;
     [SerializeField] TextMeshProUGUI headerText;
 
+    [SerializeField] GameObject auraVFX;
+    [SerializeField] GameObject tentacles;
+    [SerializeField] GameObject rootActionGroup;
+
     public UnityEvent onMenuActive;
 
     public static CombatMenu instance;
@@ -36,15 +40,21 @@ public class CombatMenu : MonoBehaviour
     {
         if (!actionQueued)
         {
-            DisplayRootActions();
-            onMenuActive.Invoke();
+            DisplayRootActions();        
         }
-
-        //firstChild = rootActions.transform.GetChild(0).gameObject;
     }
 
     private void Update()
     {
+        //if (Input.GetKeyDown(KeyCode.W))
+        //{
+        //    RevealRootActions();
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    HideRootActions();
+        //}
+
         if (actionQueued) { return; }
         if (!isMenuActive) { return; }
         if(Input.GetKeyDown(KeyCode.Space))
@@ -63,7 +73,6 @@ public class CombatMenu : MonoBehaviour
         else
         {
             allButtons[actionIndex].ConfirmSelectedAction();
-            //actionQueued = true;
             HideAllMenu();
         }
     }
@@ -71,6 +80,11 @@ public class CombatMenu : MonoBehaviour
 
     public void DisplayRootActions()
     {
+        if (!isMenuActive)
+        {
+            onMenuActive.Invoke();
+        }
+
         attackActions.gameObject.SetActive(false);
         defendActions.gameObject.SetActive(false);
         waitActions.gameObject.SetActive(false);
@@ -87,7 +101,8 @@ public class CombatMenu : MonoBehaviour
         rootActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
         rootActions.DOLocalMoveX(0f, 0.2f);
 
-        playerMat.SetFloat("_OutlineAlpha", 1f);
+        playerMat.SetFloat("_OutlineAlpha", 0.8f);
+        auraVFX.SetActive(true);
     }
 
     public void HideAllMenu()
@@ -110,6 +125,7 @@ public class CombatMenu : MonoBehaviour
         waitActions.DOLocalMoveX(-400f, 0.2f);
 
         playerMat.SetFloat("_OutlineAlpha", 0f);
+        auraVFX.SetActive(false);
     }
 
     public void DisplayATTACK()
@@ -149,5 +165,20 @@ public class CombatMenu : MonoBehaviour
 
         waitActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
         waitActions.DOLocalMoveX(0f, 0.2f);
+    }
+
+
+    public void RevealRootActions()
+    {
+        tentacles.SetActive(true);
+        rootActionGroup.SetActive(true);
+        playerMat.SetFloat("_OutlineAlpha", 0.8f);
+    }
+
+    public void HideRootActions()
+    {
+        tentacles.SetActive(false);
+        rootActionGroup.SetActive(false);
+        playerMat.SetFloat("_OutlineAlpha", 0f);
     }
 }

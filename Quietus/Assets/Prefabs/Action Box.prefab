@@ -269,7 +269,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7356347691d5c4f449560d6671943fd4, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 2
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
@@ -288,8 +288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42cb1a6e127ffa04b8dfbb303b4e1d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rootAction: 0
-  firstSelected: 0
+  actionType: 0
   animator: {fileID: 3925311083908496128}
   playerAction: {fileID: 0}
   buttonText: {fileID: 819271343993651032}
@@ -703,8 +702,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 20.999998, y: 0}
-  m_SizeDelta: {x: 238, y: -34}
+  m_AnchoredPosition: {x: 1, y: 0}
+  m_SizeDelta: {x: 198, y: -44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &523491142956062087
 CanvasRenderer:
@@ -733,8 +732,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 14233606a43945448b16046b3d1787df, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: f5723507bfb1d3c44983b83ca846fdfe, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

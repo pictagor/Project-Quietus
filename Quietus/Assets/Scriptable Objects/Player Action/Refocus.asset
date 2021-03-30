@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f27d558288164dd48a29e125bc5dc7c1, type: 3}
-  m_Name: Mindcull
+  m_Name: Refocus
   m_EditorClassIdentifier: 
   actionType: 4
-  actionName: Mindcull
-  baseSpeed: 20
+  actionName: Refocus
+  baseSpeed: 5
   sanityCost: 0
   sequenceID: 0
   baseDamage: 0
   baseHitChance: 0
-  sanityGain: 38
+  sanityGain: 7

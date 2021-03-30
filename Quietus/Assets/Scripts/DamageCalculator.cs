@@ -19,6 +19,8 @@ public class DamageCalculator : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI enemyDamage;
     [SerializeField] TextMeshProUGUI playerDamage;
+    [SerializeField] TextMeshProUGUI enemyHealthCounter;
+    [SerializeField] TextMeshProUGUI playerHealthCounter;
     [SerializeField] Image playerHealthBar;
     [SerializeField] Image enemyHealthBar;
 
@@ -31,7 +33,6 @@ public class DamageCalculator : MonoBehaviour
     public int maxHealth_Enemy;
     public int currentHealth_Enemy;
 
-
     public static DamageCalculator instance;
 
     private void Awake()
@@ -43,19 +44,25 @@ public class DamageCalculator : MonoBehaviour
     {
         currentHealth_Player = maxHealth_Player;
         currentHealth_Enemy = maxHealth_Enemy;
+
+        UpdatePlayerHealth();
+        UpdateEnemyHealth();
     }
 
     //////////////////////////////////////////////////////////////
     ///  ENEMY ATTACKING PLAYER //////////////////////////////////
     //////////////////////////////////////////////////////////////
 
-    public void DeterminePlayerFate(int damage, float hitChance) // Called by EnemyController
+    public void DeterminePlayerFate(int damage, EnemyAction enemyAction) // Called by EnemyController
     {
         // Determine Combat Outcome
-        CheckPlayerFate(hitChance);
+        CheckPlayerFate(enemyAction.baseHitChance);
 
         // Calculate Damage
         CalculateDamageToPlayer(damage);
+
+        // Apply Status Effect
+        StatusEffect.instance.ApplyStatusEffect();
     }
 
     private void CheckPlayerFate(float hitChance)
@@ -102,7 +109,7 @@ public class DamageCalculator : MonoBehaviour
         Debug.Log("MISS IF HIGHER THAN: " + finalHitChance + "(" + hitChance + " - " + PlayerController.instance.hitPenalty_Dodge + ")");
     }
 
-    private void CalculateDamageToPlayer(int damage)
+    private void CalculateDamageToPlayer(int effectiveDamage)
     {
         switch (combatOutcome)
         {
@@ -111,22 +118,33 @@ public class DamageCalculator : MonoBehaviour
                 break;
 
             case CombatOutcome.Grazed:
-                damageDealt = Mathf.RoundToInt(damage * (finalHitChance - missRoll)/finalHitChance);
-                UpdatePlayerHealth();
+                damageDealt = Mathf.Clamp(Mathf.RoundToInt(effectiveDamage * (finalHitChance - missRoll)/finalHitChance), 1, effectiveDamage);
+                PlayerTakeDamage(damageDealt);
                 break;
 
             case CombatOutcome.Blocked:
-                damageDealt = Mathf.Clamp(damage - PlayerController.instance.baseBlockDamage, 1, damage);
-                UpdatePlayerHealth();
+                damageDealt = Mathf.Clamp(effectiveDamage - PlayerController.instance.baseBlockDamage, 1, effectiveDamage);
+                PlayerTakeDamage(damageDealt);
                 break;
 
             case CombatOutcome.Hit:
-                damageDealt = damage;
-                UpdatePlayerHealth();
+                damageDealt = effectiveDamage;
+                PlayerTakeDamage(damageDealt);
                 break;
         }
     }
 
+    public void UpdatePlayerHealth()
+    {
+        playerHealthBar.fillAmount = (float)currentHealth_Player / (float)maxHealth_Player;
+        playerHealthCounter.text = currentHealth_Player.ToString() + "/" + maxHealth_Player.ToString();
+    }
+
+    public void PlayerTakeDamage(int dmg)
+    {
+        currentHealth_Player = Mathf.Clamp(currentHealth_Player - dmg, 0, maxHealth_Player);
+        UpdatePlayerHealth();
+    }
 
     //////////////////////////////////////////////////////////////
     ///  PLAYER ATTACKING ENEMY //////////////////////////////////
@@ -171,20 +189,20 @@ public class DamageCalculator : MonoBehaviour
             case CombatOutcome.Hit:
 
                 damageDealt = damage;
-                UpdateEnemyHealth();
+                EnemyTakeDamage(damageDealt);
                 break;
         }
     }
 
-    public void UpdatePlayerHealth()
+    public void EnemyTakeDamage(int dmg)
     {
-        currentHealth_Player = Mathf.Clamp(currentHealth_Player - damageDealt, 0, maxHealth_Player);
-        playerHealthBar.fillAmount = (float) currentHealth_Player / (float) maxHealth_Player;
+        currentHealth_Enemy = Mathf.Clamp(currentHealth_Enemy - damageDealt, 0, maxHealth_Enemy);
+        UpdateEnemyHealth();
     }
 
     public void UpdateEnemyHealth()
     {
-        currentHealth_Enemy = Mathf.Clamp(currentHealth_Enemy - damageDealt, 0, maxHealth_Enemy);
         enemyHealthBar.fillAmount = (float) currentHealth_Enemy / (float) maxHealth_Enemy;
+        enemyHealthCounter.text = currentHealth_Enemy.ToString() + "/" + maxHealth_Enemy.ToString();
     }
 }

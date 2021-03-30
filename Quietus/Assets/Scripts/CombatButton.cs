@@ -97,9 +97,9 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
             CombatHUD.instance.ShowPreviewSlider();
         }
 
-        if (playerAction.sanityCost > 0)
+        if (playerAction.sanityCost > 0 || playerAction.sanityGain > 0)
         {
-            Sanity.instance.DisplaySanityPreview(playerAction.sanityCost);
+            Sanity.instance.DisplaySanityPreview(playerAction.sanityCost, playerAction.sanityGain);
         }
         else if (playerAction.sanityCost == 0)
         {
@@ -129,11 +129,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
                 OnButtonClick.Invoke();
                 break;
 
-            case ActionType.Defend:
-                PlayerController.instance.ChooseCombatAction(playerAction);
-                break;
-
-            case ActionType.Attack:
+            default:
                 PlayerController.instance.ChooseCombatAction(playerAction);
                 break;
         }
