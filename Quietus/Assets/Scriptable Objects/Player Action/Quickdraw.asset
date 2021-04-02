@@ -15,8 +15,11 @@ MonoBehaviour:
   actionType: 0
   actionName: Quickdraw
   baseSpeed: 25
-  sanityCost: 40
+  sanityCost: 16
   sequenceID: 1
+  useAmmo: 1
   baseDamage: 20
   baseHitChance: 1
   sanityGain: 0
+  STUN: 1
+  STUN_Counter: 2

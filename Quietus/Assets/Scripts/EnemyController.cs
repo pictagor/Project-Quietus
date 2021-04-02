@@ -55,6 +55,15 @@ public class EnemyController : MonoBehaviour
         while (combatSlider.value >= 0)
         {
             if (CombatMenu.instance.isMenuActive) { yield return null; }
+            else if (EnemyStatusEffect.instance.isStun)
+            {
+                // combatSlider.value = 0; // Called this in CombatHUD to prevent repeated "Interrupted"
+                sliderHandle.SetActive(false);
+                intent.SetActive(false);
+                yield return new WaitUntil(() => EnemyStatusEffect.instance.isStun == false);
+                ChooseCombatAction();
+                yield break;
+            }
             else if (CombatManager.instance.pauseSlider || RallyRing.instance.isRallyActive)
             {
                 yield return null;
@@ -81,7 +90,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void ChooseCombatAction()
+    public void ChooseCombatAction()
     {
         int randomAction = Random.Range(0, availableActionList.Count);
 

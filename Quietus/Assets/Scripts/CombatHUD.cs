@@ -89,16 +89,26 @@ public class CombatHUD : MonoBehaviour
                 enemyDamage.fontSize = 50;
                 break;
 
-            case DamageCalculator.CombatOutcome.Grazed:
-                enemyDamage.text = "GRAZED\n" + DamageCalculator.instance.damageDealt.ToString();
-                enemyDamage.color = Color.red;
-                enemyDamage.fontSize = 50;
-                break;
+            //case DamageCalculator.CombatOutcome.Grazed:
+            //    enemyDamage.text = "GRAZED\n" + DamageCalculator.instance.damageDealt.ToString();
+            //    enemyDamage.color = Color.red;
+            //    enemyDamage.fontSize = 50;
+            //    break;
 
             default:
-                enemyDamage.text = DamageCalculator.instance.damageDealt.ToString();
-                enemyDamage.color = Color.red;
-                enemyDamage.fontSize = 100;
+                if (PlayerController.instance.currentAction.STUN && EnemyController.instance.combatSlider.value > 0)
+                {
+                    EnemyController.instance.combatSlider.value = 0;
+                    enemyDamage.text = "<size=50>STUNNED</size>\n" + DamageCalculator.instance.damageDealt.ToString();
+                    enemyDamage.color = Color.red;
+                    enemyDamage.fontSize = 100;
+                }
+                else
+                {
+                    enemyDamage.text = DamageCalculator.instance.damageDealt.ToString();
+                    enemyDamage.color = Color.red;
+                    enemyDamage.fontSize = 100;
+                }
                 break;
         }
 

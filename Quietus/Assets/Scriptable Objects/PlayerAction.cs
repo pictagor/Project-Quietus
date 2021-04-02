@@ -22,7 +22,7 @@ public class PlayerAction : ScriptableObject
     public int baseSpeed;
     public int sanityCost;
     public int sequenceID;
-
+    public bool useAmmo;
 
     [Header("Attack")]
     public int baseDamage;
@@ -30,4 +30,8 @@ public class PlayerAction : ScriptableObject
 
     [Header("Wait")]
     public int sanityGain;
+
+    [Header("Stun")]
+    public bool STUN;
+    public int STUN_Counter;
 }

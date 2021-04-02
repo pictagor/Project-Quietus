@@ -15,7 +15,7 @@ MonoBehaviour:
   actionType: 3
   actionName: Quickstep
   baseSpeed: 0
-  sanityCost: 5
+  sanityCost: 8
   sequenceID: 0
   baseDamage: 0
   baseHitChance: 0

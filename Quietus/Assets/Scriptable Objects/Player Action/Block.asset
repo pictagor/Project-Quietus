@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionType: 2
   actionName: Block
-  baseSpeed: 8
+  baseSpeed: 5
   sanityCost: 5
   sequenceID: 0
   baseDamage: 0

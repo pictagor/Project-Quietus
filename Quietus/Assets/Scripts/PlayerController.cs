@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
                     onActionReady.Invoke();
                     PerformAction();
 
-                    currentAction = null;
+                    //currentAction = null;
                     CombatMenu.instance.actionQueued = false;
 
                     yield break;
@@ -185,10 +185,8 @@ public class PlayerController : MonoBehaviour
 
     public void CalculateLongWaitSpeed()
     {
-        float waitSpeed = Mathf.Pow(Sanity.instance.sanityCounter, 2f) / Mathf.Pow(longWaitConst, 2f) * longWaitFactor ;
-        Debug.Log(Mathf.Pow(Sanity.instance.sanityCounter, 2f));
-        Debug.Log(waitSpeed);
-        effectiveSpeed = Mathf.Clamp(waitSpeed, minlongWait, maxLongWait);
+        float waitSpeed = Mathf.Pow(Sanity.instance.sanityCounter, 2f) / Mathf.Pow(longWaitConst, 2f) * longWaitFactor;
+        effectiveSpeed = Mathf.RoundToInt(Mathf.Clamp(waitSpeed, minlongWait, maxLongWait));
     }
 
 }

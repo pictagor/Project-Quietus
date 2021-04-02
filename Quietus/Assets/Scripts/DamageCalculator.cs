@@ -62,7 +62,7 @@ public class DamageCalculator : MonoBehaviour
         CalculateDamageToPlayer(damage);
 
         // Apply Status Effect
-        StatusEffect.instance.ApplyStatusEffect();
+        PlayerStatusEffect.instance.ApplyStatusEffect();
     }
 
     private void CheckPlayerFate(float hitChance)
@@ -155,6 +155,9 @@ public class DamageCalculator : MonoBehaviour
         CheckEnemyFate(hitChance);
 
         CalculateDamageToEnemy(damage);
+
+        // Apply Status Effect
+        EnemyStatusEffect.instance.ApplyStatusEffect();
     }
 
     private void CheckEnemyFate(float hitChance)

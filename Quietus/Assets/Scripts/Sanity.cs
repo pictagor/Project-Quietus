@@ -42,11 +42,11 @@ public class Sanity : MonoBehaviour
     {
         if (sanityCounter >= doomThreshold)
         {
-            StatusEffect.instance.InflictDOOM();
+            PlayerStatusEffect.instance.InflictDOOM();
         }
         else
         {
-            StatusEffect.instance.RemoveDOOM();
+            PlayerStatusEffect.instance.RemoveDOOM();
         }
     }
 

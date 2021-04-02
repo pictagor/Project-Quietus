@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: Vicious Strike
   m_EditorClassIdentifier: 
   actionName: Vicious Strike
-  minDamage: 18
-  maxDamage: 90
+  minDamage: 14
+  maxDamage: 72
   minSpeed: 25
   maxSpeed: 80
   sequenceID: 2
   baseHitChance: 1
+  cooldown: 0
+  BLEED: 0
+  POISON: 0
+  POISON_Counter: 0
+  POISON_damagePerTick: 0

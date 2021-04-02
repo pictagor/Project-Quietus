@@ -40,6 +40,13 @@ public class RallyRing : MonoBehaviour
         CombatMenu.instance.onMenuActive.AddListener(DisableTimer);
     }
 
+    private void OnEnable()
+    {
+        if (timer > 0f && timer < 0.5f)
+        {
+            timer += 1f; // Add one second on GUI re-enabled
+        }
+    }
 
     private void Update()
     {
@@ -113,7 +120,7 @@ public class RallyRing : MonoBehaviour
         boostAmount = PlayerController.instance.currentAction.baseSpeed * boostPct;
         float newValue = Mathf.Clamp(PlayerController.instance.combatSlider.value - boostAmount, 0, 100);
         DOTween.To(() => PlayerController.instance.combatSlider.value, x => PlayerController.instance.combatSlider.value = x, newValue, boostDuration);
-        yield return new WaitForSeconds(boostDuration);
+        yield return new WaitForSeconds(boostDuration + 0.2f);
 
 
         ring.gameObject.SetActive(false);

@@ -15,8 +15,8 @@ MonoBehaviour:
   actionName: Poisonous Fang
   minDamage: 10
   maxDamage: 15
-  minSpeed: 25
-  maxSpeed: 30
+  minSpeed: 35
+  maxSpeed: 40
   sequenceID: 2
   baseHitChance: 1
   cooldown: 5

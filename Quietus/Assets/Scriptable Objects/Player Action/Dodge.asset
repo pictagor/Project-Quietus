@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionType: 1
   actionName: Dodge
-  baseSpeed: 12
-  sanityCost: 5
+  baseSpeed: 10
+  sanityCost: 8
   sequenceID: 0
   baseDamage: 0
   baseHitChance: 0

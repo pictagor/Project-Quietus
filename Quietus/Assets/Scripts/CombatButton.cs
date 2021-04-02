@@ -20,6 +20,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
     }
 
     public ActionType actionType;
+    public bool isDisabled;
 
     [SerializeField] Animator animator;
     [SerializeField] PlayerAction playerAction;
@@ -47,7 +48,16 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
     // ======================= ADDED TO COMBAT MENU ====================================================================
     private void OnEnable()
     {
-        StartCoroutine(AddToCombatMenuList());
+        if (isDisabled)
+        {
+            animator.SetBool("Disabled", true);
+            GetComponent<Selectable>().enabled = false;
+            return;
+        }
+        else
+        {
+            StartCoroutine(AddToCombatMenuList());
+        }
     }
 
     private IEnumerator AddToCombatMenuList()
@@ -64,6 +74,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
 
     public void SelectThisButton()
     {
+        if (isDisabled) { return; }
         EventSystem.current.SetSelectedGameObject(this.gameObject);
     }
 
@@ -74,7 +85,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
 
     public void OnSelect(BaseEventData eventData)
     {
-        //if (CombatMenu.instance.actionQueued) { return; }
+        if (isDisabled) { return; }
         if (!CombatMenu.instance.isMenuActive) { return; }
         CombatMenu.instance.actionIndex = CombatMenu.instance.allButtons.IndexOf(this);
         animator.SetBool("Selected", true);
@@ -110,6 +121,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (isDisabled) { return; }
         ConfirmSelectedAction();
     }
 
@@ -135,6 +147,12 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
         }
     }
 
+    // ======================= DISABLED ====================================================================
+
+    public void DisableButton()
+    {
+        isDisabled = true;
+    }
 
     /// AUDIO //////////////////////////////////////////////////////
 
