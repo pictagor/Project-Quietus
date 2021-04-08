@@ -14,9 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionType: 3
   actionName: Quickstep
+  description: Attempt to sidestep enemy's attack at the last minute, nullifying
+    all damage.
   baseSpeed: 0
   sanityCost: 8
   sequenceID: 0
+  useAmmo: 0
   baseDamage: 0
   baseHitChance: 0
   sanityGain: 0
+  STUN: 0
+  STUN_Counter: 0

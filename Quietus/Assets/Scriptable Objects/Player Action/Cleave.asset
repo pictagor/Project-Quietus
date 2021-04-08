@@ -14,9 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionType: 0
   actionName: Cleave
+  description: 'A heavy slash attack. Effective against Beast-type enemies.
+
+    Speed:
+    40 | Damage: 45 | Sanity: 24
+
+'
   baseSpeed: 40
   sanityCost: 24
   sequenceID: 0
+  useAmmo: 0
   baseDamage: 45
   baseHitChance: 1
   sanityGain: 0
+  STUN: 0
+  STUN_Counter: 0

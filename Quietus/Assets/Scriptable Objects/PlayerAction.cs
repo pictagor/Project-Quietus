@@ -13,12 +13,13 @@ public class PlayerAction : ScriptableObject
         Block,
         Quickstep,
         ShortWait,
-        LongWait,
+        LongWait
     }
     public ActionType actionType;
 
     [Header("General")]
     public string actionName;
+    [TextArea(5, 5)] public string description;
     public int baseSpeed;
     public int sanityCost;
     public int sequenceID;

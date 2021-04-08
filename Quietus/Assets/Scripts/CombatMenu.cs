@@ -27,15 +27,20 @@ public class CombatMenu : MonoBehaviour
     [SerializeField] SpriteRenderer playerSprite;
     private Material playerMat;
 
-    [SerializeField] RectTransform rootActions;
+    [Header("Action Groups")]
+    [SerializeField] GameObject rootActionGroup;
     [SerializeField] RectTransform attackActions;
     [SerializeField] RectTransform defendActions;
     [SerializeField] RectTransform waitActions;
     [SerializeField] TextMeshProUGUI headerText;
 
+    [Header("Other GUI Elements")]
     [SerializeField] GameObject auraVFX;
     [SerializeField] GameObject tentacles;
-    [SerializeField] GameObject rootActionGroup;
+
+    [Header("Description Box")]
+    [SerializeField] GameObject infoBox;
+    [SerializeField] TextMeshProUGUI descriptionText;
 
     public UnityEvent onMenuActive;
 
@@ -87,43 +92,6 @@ public class CombatMenu : MonoBehaviour
         {
             HideAllMenu();
         }
-        //if (allButtons[actionIndex].actionType == CombatButton.ActionType.Root)
-        //{
-        //    allButtons[actionIndex].ConfirmSelectedAction();
-        //}
-        //else
-        //{
-        //    allButtons[actionIndex].ConfirmSelectedAction();
-        //    HideAllMenu();
-        //}
-    }
-
-
-    public void DisplayRootActions()
-    {
-        if (!isMenuActive)
-        {
-            onMenuActive.Invoke();
-        }
-
-        attackActions.gameObject.SetActive(false);
-        defendActions.gameObject.SetActive(false);
-        waitActions.gameObject.SetActive(false);
-
-        allButtons.Clear();
-        rootActions.gameObject.SetActive(true);
-
-        isMenuActive = true;
-
-        headerText.text = null;
-        headerText.transform.parent.gameObject.SetActive(false);
-
-
-        rootActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
-        rootActions.DOLocalMoveX(0f, 0.2f);
-
-        playerMat.SetFloat("_OutlineAlpha", 0.8f);
-        auraVFX.SetActive(true);
     }
 
     public void HideAllMenu()
@@ -147,47 +115,9 @@ public class CombatMenu : MonoBehaviour
 
         playerMat.SetFloat("_OutlineAlpha", 0f);
         auraVFX.SetActive(false);
+
+        HideInfoBox();
     }
-
-    public void DisplayATTACK()
-    {
-        rootActions.gameObject.SetActive(false);
-        allButtons.Clear();
-        attackActions.gameObject.SetActive(true);
-
-        headerText.transform.parent.gameObject.SetActive(true);
-        headerText.text = "ATTACK";
-
-        attackActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
-        attackActions.DOLocalMoveX(0f, 0.2f);
-    }
-
-    public void DisplayDEFEND()
-    {
-        rootActions.gameObject.SetActive(false);
-        allButtons.Clear();
-        defendActions.gameObject.SetActive(true);
-
-        headerText.transform.parent.gameObject.SetActive(true);
-        headerText.text = "DEFEND";
-
-        defendActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
-        defendActions.DOLocalMoveX(0f, 0.2f);
-    }
-
-    public void DisplayWAIT()
-    {
-        rootActions.gameObject.SetActive(false);
-        allButtons.Clear();
-        waitActions.gameObject.SetActive(true);
-
-        headerText.transform.parent.gameObject.SetActive(true);
-        headerText.text = "REGAIN";
-
-        waitActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
-        waitActions.DOLocalMoveX(0f, 0.2f);
-    }
-
 
     public void RevealRootActions()
     {
@@ -212,6 +142,8 @@ public class CombatMenu : MonoBehaviour
 
         headerText.text = null;
         headerText.transform.parent.gameObject.SetActive(false);
+
+        HideInfoBox();
     }
 
     public void HideRootActions()
@@ -235,7 +167,6 @@ public class CombatMenu : MonoBehaviour
         headerText.transform.parent.gameObject.SetActive(true);
         headerText.text = "ATTACK";
 
-        attackActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
         attackActions.DOLocalMoveX(0f, 0.2f);
     }
 
@@ -253,7 +184,6 @@ public class CombatMenu : MonoBehaviour
         headerText.transform.parent.gameObject.SetActive(true);
         headerText.text = "DEFEND";
 
-        defendActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
         defendActions.DOLocalMoveX(0f, 0.2f);
     }
 
@@ -271,8 +201,19 @@ public class CombatMenu : MonoBehaviour
         headerText.transform.parent.gameObject.SetActive(true);
         headerText.text = "REGAIN";
 
-        waitActions.anchoredPosition = new Vector2(-400f, rootActions.anchoredPosition.y);
         waitActions.DOLocalMoveX(0f, 0.2f);
+    }
+
+    public void DisplayInfoBox(string description)
+    {
+        infoBox.SetActive(true);
+        descriptionText.text = description;
+    }
+
+    public void HideInfoBox()
+    {
+        infoBox.SetActive(false);
+        descriptionText.text = null;
     }
 
     private void OnDisable()

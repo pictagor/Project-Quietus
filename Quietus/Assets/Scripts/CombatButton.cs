@@ -94,6 +94,7 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
         {
             CombatHUD.instance.HidePreviewSlider();
             Sanity.instance.DisplaySanityText();
+            CombatMenu.instance.HideInfoBox();
             return;
         }
 
@@ -116,6 +117,8 @@ public class CombatButton : MonoBehaviour, IPointerDownHandler, ISelectHandler, 
         {
             Sanity.instance.DisplaySanityText();
         }
+
+        CombatMenu.instance.DisplayInfoBox(playerAction.description);
     }
     // ======================= ON CONFIRM ====================================================================
 

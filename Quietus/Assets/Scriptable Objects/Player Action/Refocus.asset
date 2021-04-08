@@ -14,9 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionType: 4
   actionName: Refocus
+  description: Quickly refocus your mind before it slips further into madness. Lower
+    Sanity by 5 Points
   baseSpeed: 5
   sanityCost: 0
   sequenceID: 0
+  useAmmo: 0
   baseDamage: 0
   baseHitChance: 0
   sanityGain: 7
+  STUN: 0
+  STUN_Counter: 0

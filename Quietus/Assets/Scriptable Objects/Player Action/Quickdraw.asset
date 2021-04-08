@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionType: 0
   actionName: Quickdraw
-  baseSpeed: 25
+  description: 'Fires your pistol. Interrupts and stuns target for 3 seconds.
+
+    Speed:
+    25 | Damage: 20 | Sanity: 16'
+  baseSpeed: 0
   sanityCost: 16
   sequenceID: 1
   useAmmo: 1

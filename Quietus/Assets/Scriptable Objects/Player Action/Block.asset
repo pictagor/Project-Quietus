@@ -14,9 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionType: 2
   actionName: Block
+  description: Attempt to block enemy's attack. Reduce 20 damage taken.
   baseSpeed: 5
   sanityCost: 5
   sequenceID: 0
+  useAmmo: 0
   baseDamage: 0
   baseHitChance: 0
   sanityGain: 0
+  STUN: 0
+  STUN_Counter: 0

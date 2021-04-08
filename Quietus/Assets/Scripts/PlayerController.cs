@@ -75,6 +75,10 @@ public class PlayerController : MonoBehaviour
         {
             Quickstep.instance.SpawnArrows();
         }
+        else if (playerAction.useAmmo)
+        {
+            Aiming.instance.TriggerAim();
+        }
         else
         {
             if (playerAction.baseSpeed > 0)
@@ -109,7 +113,6 @@ public class PlayerController : MonoBehaviour
                 counterText.text = Mathf.FloorToInt(combatSlider.value).ToString();
                 if (combatSlider.value == 0)
                 {
-                    onActionReady.Invoke();
                     PerformAction();
 
                     //currentAction = null;
@@ -125,8 +128,9 @@ public class PlayerController : MonoBehaviour
 
     // ==================== When slider reaches zero ========================================================
 
-    private void PerformAction()
+    public void PerformAction()
     {
+        onActionReady.Invoke();
         switch (currentAction.actionType)
         {
             case PlayerAction.ActionType.Dodge:

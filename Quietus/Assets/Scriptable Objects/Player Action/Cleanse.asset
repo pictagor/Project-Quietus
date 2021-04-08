@@ -14,9 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionType: 5
   actionName: Cleanse
+  description: Gather all your willpower to cleanse your mind. Reset Sanity to zero.
   baseSpeed: 20
   sanityCost: 0
   sequenceID: 0
+  useAmmo: 0
   baseDamage: 0
   baseHitChance: 0
   sanityGain: 1000
+  STUN: 0
+  STUN_Counter: 0

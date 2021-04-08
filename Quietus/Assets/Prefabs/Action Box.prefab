@@ -66,8 +66,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Attack
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4fc21f528abf8e24a8c6737c6abb785b, type: 2}
-  m_sharedMaterial: {fileID: 21856852999145796, guid: 4fc21f528abf8e24a8c6737c6abb785b,
+  m_fontAsset: {fileID: 11400000, guid: 895f111fa119b864ab7c9128c9a9554d, type: 2}
+  m_sharedMaterial: {fileID: -2973916270459916660, guid: 895f111fa119b864ab7c9128c9a9554d,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -733,8 +733,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e092707f6e7592747a4d823c2984b851, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 05b52774e1cfc8245a0030a98dec24e1, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -855,7 +855,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9056604, g: 0.8080288, b: 0.54254186, a: 0.78431374}
+  m_Color: {r: 0.6117647, g: 0.7572604, b: 0.90588236, a: 1}
   m_RaycastTarget: 0
   m_Maskable: 0
   m_OnCullStateChanged:

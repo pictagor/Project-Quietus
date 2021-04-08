@@ -21,7 +21,8 @@ public class Pistol : MonoBehaviour
             bulletImages.Add(newBullet.GetComponent<Image>());
         }
 
-        PlayerController.instance.onActionReady.AddListener(ConsumeAmmo);
+        //PlayerController.instance.onActionReady.AddListener(ConsumeAmmo);
+        Aiming.instance.onAimingFinished.AddListener(ConsumeAmmo);
     }
 
     public void ConsumeAmmo()
